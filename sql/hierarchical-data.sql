@@ -10,6 +10,10 @@ select ename, empno, mgr
 from emp
 order by ename;
 
+select e.ename as employee, m.ename as manager
+from emp e left join emp m on e.mgr = m.empno
+order by e.ename;
+
 -- with JOINs
 select e.ename as name, e.job as title, m.ename as manager
 from emp e left join emp m on e.mgr = m.empno
