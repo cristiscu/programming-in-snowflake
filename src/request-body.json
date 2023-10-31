@@ -1,6 +1,0 @@
-{
-    "statement": "describe user cristiscu",
-    "timeout": 60,
-    "warehouse": "COMPUTE_WH",
-    "role": "ACCOUNTADMIN"
-}

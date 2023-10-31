@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <title>Task DAG Run</title>
+
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+        google.charts.load("current", { packages: ["gantt"] });
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn("string", "Task ID");
+            data.addColumn("string", "Task Name");
+            data.addColumn("date", "Start");
+            data.addColumn("date", "End");
+            data.addColumn("number", "Duration");
+            data.addColumn("number", "Percent Complete");
+            data.addColumn("string", "Dependencies");
+
+            data.addRows(["{{content}}"]);
+
+            var options = {
+                height: 500,
+                gantt: { 
+                    arrow: { color: "#c8c8c8" },
+                    criticalPathEnabled: false,
+                    palette: [{
+                        "color": "#4098ff",
+                        "dark": "#d8eaff",
+                        "light": "#4098ff"
+                    }]
+                 }};
+
+            var chart = new google.visualization.Gantt(document.getElementById("chart_div"));
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+<body><div id="chart_div"></div></body>
+</html>
