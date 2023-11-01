@@ -3,25 +3,21 @@ import plotly.graph_objects as go
 import pandas as pd
 
 # see https://plotly.com/python/treemaps/
-def makeTreemap(ids, labels, parents):
+def makeTreemap(labels, parents):
 
-    fig = go.Figure()
-    fig.add_trace(go.Treemap(
-        ids=ids,
+    data = go.Treemap(
+        ids=labels,
         labels=labels,
         parents=parents,
-        branchvalues="remainder",
-        maxdepth=10,
-        root_color="lightgrey"))
-
-    fig.update_layout(margin = dict(t=10, l=10, r=10, b=10))
+        root_color="lightgrey")
+    fig = go.Figure(data)
     return fig
 
 # see https://plotly.com/python/icicle-charts/
-def makeIcicle(ids, labels, parents):
+def makeIcicle(labels, parents):
 
     data = go.Icicle(
-        ids=ids,
+        ids=labels,
         labels=labels,
         parents=parents,
         root_color="lightgrey")
@@ -29,51 +25,42 @@ def makeIcicle(ids, labels, parents):
     return fig
 
 # see https://plotly.com/python/sunburst-charts/
-def makeSunburst(ids, labels, parents):
+def makeSunburst(labels, parents):
 
-    fig = go.Figure()
-    fig.add_trace(go.Sunburst(
-        ids=ids,
+    data = go.Sunburst(
+        ids=labels,
         labels=labels,
         parents=parents,
-        branchvalues="remainder",
-        domain=dict(column=1),
-        maxdepth=10,
-        insidetextorientation='horizontal'))
-
-    fig.update_layout(margin = dict(t=10, l=10, r=10, b=10))
+        insidetextorientation='horizontal')
+    fig = go.Figure(data)
     return fig
 
 # see https://plotly.com/python/sankey-diagram/
-def makeSankey(ids, labels, parents):
+def makeSankey(labels, parents):
 
-    node = dict(
-        pad=15,
-        thickness=20,
-        line=dict(color="black", width=0.5),
-        label=labels,
-        color="blue")
-    link = dict(source=ids, target=parents, label=labels, value=list(range(1, len(ids))))
-    data=[go.Sankey(node=node, link=link)]
+    data = go.Sankey(
+        node=dict(label=labels),
+        link=dict(
+            source=[list(labels).index(x) for x in labels],
+            target=[-1 if pd.isna(x) else list(labels).index(x) for x in parents],
+            label=labels,
+            value=list(range(1, len(labels)))))
     fig = go.Figure(data)
-
-    fig.update_layout(font_size=10)
     return fig
 
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
-ids = df[df.columns[2]]
 labels = df[df.columns[0]]
-parents = df[df.columns[3]]
+parents = df[df.columns[1]]
 
-makeTreemap(ids, labels, parents).show()
+makeTreemap(labels, parents).show()
 print('Generated Treemap chart')
 
-makeIcicle(ids, labels, parents).show()
+makeIcicle(labels, parents).show()
 print('Generated Icicle chart')
 
-makeSunburst(ids, labels, parents).show()
+makeSunburst(labels, parents).show()
 print('Generated Sunburst chart')
 
-makeSankey(ids, labels, parents).show()
+makeSankey(labels, parents).show()
 print('Generated Sankey chart')

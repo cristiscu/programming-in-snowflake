@@ -3,10 +3,25 @@ from pyvis.network import Network
 import os, json, webbrowser
 import pandas as pd
 
-def makeCollapsibleTree(df): return _makeTree("collapsible-tree", df)
-def makeLinearDendrogram(df): return _makeTree("linear-dendrogram", df)
+def makeCollapsibleTree(df, idx_label, idx_parent):
+    return _makeTree("collapsible-tree", df, idx_label, idx_parent)
 
-def _makeTree(template, df):
+def makeLinearDendrogram(df, idx_label, idx_parent):
+    return _makeTree("linear-dendrogram", df, idx_label, idx_parent)
+
+def _makeTree(template, df, idx_label, idx_parent):
+
+    root = _getTree(df, idx_label, idx_parent)
+
+    # create HTML file from template customized with our JSON
+    with open(f"d3/templates/{template}.html", "r") as file:
+        content = file.read()
+    filename = f'd3/{template}.html'
+    with open(filename, "w") as file:
+        file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
+    return os.path.abspath(filename)
+
+def _getTree(df, idx_label, idx_parent):
     """
     { "name": "KING",
       "children": [{
@@ -28,23 +43,29 @@ def _makeTree(template, df):
     # move children under parents, and detect root
     root = None
     for _, row in df.iterrows():
-        node = nodes[row.iloc[0]]
-        isRoot = pd.isna(row.iloc[1])
+        node = nodes[row.iloc[idx_label]]
+        isRoot = pd.isna(row.iloc[idx_parent])
         if isRoot: root = node
         else:
-            parent = nodes[row.iloc[1]]
+            parent = nodes[row.iloc[idx_parent]]
             if "children" not in parent: parent["children"] = []
             parent["children"].append(node)
 
-    # create HTML file from template customized with our JSON
-    with open(f"d3/templates/{template}.html", "r") as file:
+    return root
+
+def makeRadialDendrogram(df, idx_label, idx_parent):
+
+    nodes = _getPath(df, idx_label, idx_parent)
+
+    # create HTML file from template customized with our JSON array
+    with open(f"d3/templates/radial-dendrogram.html", "r") as file:
         content = file.read()
-    filename = f'd3/{template}.html'
+    filename = 'd3/radial-dendrogram.html'
     with open(filename, "w") as file:
-        file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
+        file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
     return os.path.abspath(filename)
 
-def makeRadialDendrogram(df):
+def _getPath(df, idx_label, idx_parent):
     """
     [{ "id": "KING.JONES.SCOTT.ADAMS" },
     { "id": "KING.BLAKE.ALLEN" },
@@ -53,62 +74,29 @@ def makeRadialDendrogram(df):
     ...]
     """
 
-    dummy_name = "_"
-    root = { "id": dummy_name, "name": dummy_name }
-    nodes = {}
-    nodes[dummy_name] = root
-
     # add nodes (to a local map)
+    nodes, root = {}, None
     for _, row in df.iterrows():
-        nFrom = row.iloc[2]
-        name = row.iloc[0]
+        name = row.iloc[idx_label]
         node = { "id": name, "name": name }
-        nodes[nFrom] = node
-        if not pd.isna(row.iloc[1]): node["parentId"] = row.iloc[3]
-
-    # count top nodes
-    topNodes = 0
-    for key in nodes:
-        node = nodes[key]
-        if node is not root \
-            and ("parentId" not in node \
-            or node["parentId"] not in nodes):
-            node["parentId"] = dummy_name
-            topNodes += 1
+        if not pd.isna(row.iloc[1]): node["parent"] = row.iloc[idx_parent]
+        else: root = node
+        nodes[name] = node
 
     # add node name prefixes
     for key in nodes:
         node = nodes[key]
         nodeCrt = node
         while node is not root:
-            parentId = node["parentId"]
-            nodeP = nodes[parentId]
-            if nodeP is not root or topNodes > 1:
-                nodeCrt["id"] = f'{nodeP["name"]}.{nodeCrt["id"]}'
-            node = nodeP
+            parent = nodes[node["parent"]]
+            nodeCrt["id"] = f'{parent["name"]}.{nodeCrt["id"]}'
+            node = parent
 
-    # create final array
-    nodesA = []
-    for node in nodes.values():
-        obj = { "id": node["id"] }
-        nodesA.append(obj)
+    return [{ "id": node["id"] } for node in nodes.values()]
 
-    # remove dummy node
-    if topNodes == 1:
-        obj = next((n for n in nodesA if n["id"] == dummy_name), None)
-        nodesA.remove(obj)
+def makeNetworkGraph(df, idx_label, idx_parent):
 
-    # create HTML file from template customized with our JSON array
-    with open(f"d3/templates/radial-dendrogram.html", "r") as file:
-        content = file.read()
-    filename = 'd3/radial-dendrogram.html'
-    with open(filename, "w") as file:
-        file.write(content.replace('"{{data}}"', json.dumps(nodesA, indent=4)))
-    return os.path.abspath(filename)
-
-def makeNetworkGraph(df):
-
-    data = Network(height="600px", width="100%", notebook=True, heading='')
+    data = Network(notebook=True, heading='')
     data.barnes_hut(
         gravity=-80000,
         central_gravity=0.3,
@@ -118,8 +106,8 @@ def makeNetworkGraph(df):
         overlap=0)
 
     for _, row in df.iterrows():
-        src = str(row.iloc[0])
-        dst = str(row.iloc[1])
+        src = str(row.iloc[idx_label])
+        dst = str(row.iloc[idx_parent])
         data.add_node(src)
         data.add_node(dst)
         data.add_edge(src, dst)
@@ -133,20 +121,21 @@ def makeNetworkGraph(df):
     data.show(filename)
     return os.path.abspath(filename)
 
+
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
-filename = makeCollapsibleTree(df)
+filename = makeCollapsibleTree(df, 0, 1)
 print('Generated Collapsible Tree')
 webbrowser.open(filename)
 
-filename = makeLinearDendrogram(df)
+filename = makeLinearDendrogram(df, 0, 1)
 print('Generated Linear Dendrogram')
 webbrowser.open(filename)
 
-filename = makeRadialDendrogram(df)
+filename = makeRadialDendrogram(df, 0, 1)
 print('Generated Radial Dendrogram')
 webbrowser.open(filename)
 
-filename = makeNetworkGraph(df)
+filename = makeNetworkGraph(df, 0, 1)
 print('Generated Network Chart')
 webbrowser.open(filename)

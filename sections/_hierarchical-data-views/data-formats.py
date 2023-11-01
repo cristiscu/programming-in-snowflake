@@ -1,7 +1,7 @@
 import pandas as pd
 import json
 
-def getJson(df):
+def getJson(df, idx_label, idx_parent):
     """
     { "name": "KING",
       "children": [{
@@ -17,17 +17,17 @@ def getJson(df):
     # collect all nodes
     nodes = {}
     for _, row in df.iterrows():
-        name = row.iloc[0]
+        name = row.iloc[idx_label]
         nodes[name] = { "name": name }
 
     # move children under parents, and detect root
     root = None
     for _, row in df.iterrows():
-        node = nodes[row.iloc[0]]
-        isRoot = pd.isna(row.iloc[1])
+        node = nodes[row.iloc[idx_label]]
+        isRoot = pd.isna(row.iloc[idx_parent])
         if isRoot: root = node
         else:
-            parent = nodes[row.iloc[1]]
+            parent = nodes[row.iloc[idx_parent]]
             if "children" not in parent: parent["children"] = []
             parent["children"].append(node)
 
@@ -35,24 +35,24 @@ def getJson(df):
 
 def getXml(node, level=0):
     """
-    <person>
-    <name>KING</name>
-    <children>
-        <person>
-            <name>BLAKE</name>
-            <children>
-                <person>
+    <object>
+      <name>KING</name>
+      <children>
+        <object>
+          <name>BLAKE</name>
+          <children>
+              <object>
                 <name>ALLEN</name>
-                </person>
-                <person>
+              </object>
+              <object>
                 <name>JAMES</name>
-                </person>
+              </object>
     ...
     """
 
-    # add <person> and <name>
+    # add <object> and <name>
     indent = '   '
-    s = f"{indent * level}<person>\n"
+    s = f"{indent * level}<object>\n"
     s += f"{indent * (level+1)}<name>{node['name']}</name>\n"
 
     # recursively append the inner children
@@ -62,7 +62,7 @@ def getXml(node, level=0):
             s += getXml(child, level+2)
         s += f"{indent * (level+1)}</children>\n"
 
-    return f"{s}{indent * level}</person>\n"
+    return f"{s}{indent * level}</object>\n"
 
 def getYaml(node, level=0, first=False):
     """
@@ -92,7 +92,7 @@ df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
 # convert and save as JSON
 # validate at https://jsonlint.com/
-root = getJson(df)
+root = getJson(df, 0, 1)
 with open("data/employee-manager.json", "w") as f:
     f.writelines(json.dumps(root, indent=3))
 print('Generated "data/employee-manager.json" file')

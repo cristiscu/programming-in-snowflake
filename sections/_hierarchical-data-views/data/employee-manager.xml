@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
-<person>
+<object>
    <name>KING</name>
    <children>
-      <person>
+      <object>
          <name>BLAKE</name>
          <children>
-            <person>
+            <object>
                <name>ALLEN</name>
-            </person>
-            <person>
+            </object>
+            <object>
                <name>JAMES</name>
-            </person>
-            <person>
+            </object>
+            <object>
                <name>MARTIN</name>
-            </person>
-            <person>
+            </object>
+            <object>
                <name>TURNER</name>
-            </person>
-            <person>
+            </object>
+            <object>
                <name>WARD</name>
-            </person>
+            </object>
          </children>
-      </person>
-      <person>
+      </object>
+      <object>
          <name>CLARK</name>
          <children>
-            <person>
+            <object>
                <name>MILLER</name>
-            </person>
+            </object>
          </children>
-      </person>
-      <person>
+      </object>
+      <object>
          <name>JONES</name>
          <children>
-            <person>
+            <object>
                <name>FORD</name>
                <children>
-                  <person>
+                  <object>
                      <name>SMITH</name>
-                  </person>
+                  </object>
                </children>
-            </person>
-            <person>
+            </object>
+            <object>
                <name>SCOTT</name>
                <children>
-                  <person>
+                  <object>
                      <name>ADAMS</name>
-                  </person>
+                  </object>
                </children>
-            </person>
+            </object>
          </children>
-      </person>
+      </object>
    </children>
-</person>
+</object>
