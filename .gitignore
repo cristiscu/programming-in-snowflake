@@ -55,3 +55,5 @@ profiles_db.conf
 venv/
 sections/hierarchical-data-views/lib
 sections/_hierarchical-data-views/lib
+sections/streamlit-web-app/lib
+sections/_streamlit-web-app/lib

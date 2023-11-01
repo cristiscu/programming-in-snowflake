@@ -14,9 +14,9 @@ def _makeTree(template, df, idx_label, idx_parent):
     root = _getTree(df, idx_label, idx_parent)
 
     # create HTML file from template customized with our JSON
-    with open(f"d3/templates/{template}.html", "r") as file:
+    with open(f"animated/templates/{template}.html", "r") as file:
         content = file.read()
-    filename = f'd3/{template}.html'
+    filename = f'animated/{template}.html'
     with open(filename, "w") as file:
         file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
     return os.path.abspath(filename)
@@ -58,9 +58,9 @@ def makeRadialDendrogram(df, idx_label, idx_parent):
     nodes = _getPath(df, idx_label, idx_parent)
 
     # create HTML file from template customized with our JSON array
-    with open(f"d3/templates/radial-dendrogram.html", "r") as file:
+    with open(f"animated/templates/radial-dendrogram.html", "r") as file:
         content = file.read()
-    filename = 'd3/radial-dendrogram.html'
+    filename = 'animated/radial-dendrogram.html'
     with open(filename, "w") as file:
         file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
     return os.path.abspath(filename)
@@ -117,25 +117,6 @@ def makeNetworkGraph(df, idx_label, idx_parent):
     for node in data.nodes:
         node["value"] = len(map[node["id"]])
 
-    filename = f'd3/network-graph.html'
+    filename = f'animated/network-graph.html'
     data.show(filename)
     return os.path.abspath(filename)
-
-
-df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
-
-filename = makeCollapsibleTree(df, 0, 1)
-print('Generated Collapsible Tree')
-webbrowser.open(filename)
-
-filename = makeLinearDendrogram(df, 0, 1)
-print('Generated Linear Dendrogram')
-webbrowser.open(filename)
-
-filename = makeRadialDendrogram(df, 0, 1)
-print('Generated Radial Dendrogram')
-webbrowser.open(filename)
-
-filename = makeNetworkGraph(df, 0, 1)
-print('Generated Network Chart')
-webbrowser.open(filename)

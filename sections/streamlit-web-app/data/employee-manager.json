@@ -1,0 +1,54 @@
+{
+   "name": "KING",
+   "children": [
+      {
+         "name": "BLAKE",
+         "children": [
+            {
+               "name": "ALLEN"
+            },
+            {
+               "name": "JAMES"
+            },
+            {
+               "name": "MARTIN"
+            },
+            {
+               "name": "TURNER"
+            },
+            {
+               "name": "WARD"
+            }
+         ]
+      },
+      {
+         "name": "CLARK",
+         "children": [
+            {
+               "name": "MILLER"
+            }
+         ]
+      },
+      {
+         "name": "JONES",
+         "children": [
+            {
+               "name": "FORD",
+               "children": [
+                  {
+                     "name": "SMITH"
+                  }
+               ]
+            },
+            {
+               "name": "SCOTT",
+               "children": [
+                  {
+                     "name": "ADAMS"
+                  }
+               ]
+            }
+         ]
+      }
+   ]
+}
