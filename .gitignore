@@ -53,3 +53,5 @@ build/
 *.spec
 profiles_db.conf
 venv/
+sections/hierarchical-data-views/lib
+sections/_hierarchical-data-views/lib

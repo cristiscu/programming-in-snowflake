@@ -10,7 +10,9 @@ select ename, empno, mgr
 from emp
 order by ename;
 
-select e.ename as employee, m.ename as manager
+-- download as employee-manager.csv file
+select e.ename as employee, m.ename as manager,
+  e.empno as employee_id, m.empno as manager_id
 from emp e left join emp m on e.mgr = m.empno
 order by e.ename;
 
