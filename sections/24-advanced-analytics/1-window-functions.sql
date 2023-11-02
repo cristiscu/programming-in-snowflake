@@ -1,7 +1,7 @@
 -- select database and schema
 use schema employees.public;
 
--- windw frame
+-- window frame
 select ename, hiredate, sal,
   round(avg(sal) over (order by hiredate
     rows between 1 preceding and 1 following), 2) as avg
