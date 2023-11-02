@@ -23,12 +23,9 @@ select dname, sum(sal)
   group by dname
   order by dname;
 """
-emps = (session.table("EMP")
-  .select("EMPNO", "DEPTNO", "SAL"))
-depts = (session.table("DEPT")
-  .select("DEPTNO", "DNAME"))
-q = emps.join(depts,
-  emps.deptno == depts.deptno)
+emps = (session.table("EMP").select("EMPNO", "DEPTNO", "SAL"))
+depts = (session.table("DEPT").select("DEPTNO", "DNAME"))
+q = emps.join(depts, emps.deptno == depts.deptno)
 
 q = q.filter(q.dname != 'RESEARCH')
 (q.select("DNAME", "SAL")

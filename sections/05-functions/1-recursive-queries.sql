@@ -66,18 +66,3 @@ select name, path, title
 from cte
 order by path;
 
--- (4) with recursive view
--- https://docs.snowflake.com/en/sql-reference/sql/create-view#examples
-create recursive view employee_hierarchy (level, name, title, empno, mgr, path) as (
-  select 1, ename, job, empno, mgr, ' -> ' || ename
-  from emp where mgr is null
-  union all
-  select m.level + 1,
-    repeat('  ', level) || e.ename, e.job,
-    e.empno, e.mgr, path || ' -> ' || e.ename
-  from emp e join employee_hierarchy m on e.mgr = m.empno
-);
-
-select name, path, title
-from employee_hierarchy
-order by path;
