@@ -68,6 +68,13 @@ from emp;
 -- =========================================================
 
 -- UDTF
+create or replace function get_hierarchy()
+  returns table(name string, path string)
+as 'select name, path from employee_hierarchy order by path';
+
+select * from table(get_hierarchy());
+
+-- UDTF
 create or replace function get_managers()
   returns table(employee string, manager string)
 as 'select e.ename employee, m.ename manager

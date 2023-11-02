@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+<meta charset="UTF-8">
+<title>Linear Dendrogram</title>
+<style>
+.node circle {
+  fill: #fff;
+  stroke: steelblue;
+  stroke-width: 1px;
+}
+.node text { font: 14px sans-serif; }
+.link {
+  fill: none;
+  stroke: #ccc;
+  stroke-width: 1px;
+}
+</style>
+</head>
+
+<body translate="no">
+<div class="hierarchy-container">
+<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/4.5.0/d3.min.js'></script>
+<script>
+
+let tree = d3.tree;
+let hierarchy = d3.hierarchy;
+let select = d3.select;
+let data = "{{data}}";
+
+class MyTree {
+    constructor() {
+        this.connector = (d) => "M" + d.parent.y + "," + d.parent.x + "V" + d.x + "H" + d.y;
+        this.collapse = (d) => {
+            if (d.children) {
+                d._children = d.children;
+                d._children.forEach(this.collapse);
+                d.children = null;
+            }
+        };
+        this.click = (d) => {
+            if (d.children) {
+                d._children = d.children;
+                d.children = null;
+            } else {
+                d.children = d._children;
+                d._children = null;
+            }
+            this.update(d);
+        };
+        this.update = (source) => {
+            this.width = 800;
+            let nodes = this.tree(this.root);
+            let nodesSort = [];
+            nodes.eachBefore(function (n) { nodesSort.push(n); });
+            this.height = Math.max(500, nodesSort.length * this.barHeight + this.margin.top + this.margin.bottom);
+            let links = nodesSort.slice(1);
+            nodesSort.forEach((n, i) => { n.x = i * this.barHeight; });
+            d3.select('svg').transition()
+                .duration(this.duration)
+                .attr("height", this.height);
+            let node = this.svg.selectAll('g.node')
+                .data(nodesSort, function (d) {
+                return d.id || (d.id = ++this.i);
+            });
+            var nodeEnter = node.enter().append('g')
+                .attr('class', 'node')
+                .attr('transform', function () {
+                return 'translate(' + source.y0 + ',' + source.x0 + ')';
+            })
+                .on('click', this.click);
+            nodeEnter.append('circle')
+                .attr('r', 1e-6)
+                .style('fill', function (d) {
+                return d._children ? 'lightsteelblue' : '#fff';
+            });
+            nodeEnter.append('text')
+                .attr('x', function (d) {
+                return d.children || d._children ? 10 : 10;
+            })
+                .attr('dy', '.35em')
+                .attr('text-anchor', (d) => d.children || d._children ? 'start' : 'start')
+                .text(function (d) {
+                    var s = d.data.name;
+                    if (s.length > 20) s = s.substring(0, 20) + '...';
+                    if ("value" in d.data) s += " (" + d.data.value + ")";
+                    return s;
+            })
+                .style('fill-opacity', 1e-6);
+            nodeEnter.append('svg:title').text(function (d) { return d.data.name; });
+            let nodeUpdate = node.merge(nodeEnter)
+                .transition()
+                .duration(this.duration);
+            nodeUpdate
+                .attr('transform', function (d) {
+                return 'translate(' + d.y + ',' + d.x + ')';
+            });
+            nodeUpdate.select('circle')
+                .attr('r', 4.5)
+                .style('fill', function (d) {
+                return d._children ? 'lightsteelblue' : '#fff';
+            });
+            nodeUpdate.select('text')
+                .style('fill-opacity', 1);
+            var nodeExit = node.exit().transition()
+                .duration(this.duration);
+            nodeExit
+                .attr('transform', function (d) {
+                return 'translate(' + source.y + ',' + source.x + ')';
+            })
+                .remove();
+            nodeExit.select('circle')
+                .attr('r', 1e-6);
+            nodeExit.select('text')
+                .style('fill-opacity', 1e-6);
+            var link = this.svg.selectAll('path.link')
+                .data(links, function (d) {
+                var id = d.id + '->' + d.parent.id;
+                return id;
+            });
+            let linkEnter = link.enter().insert('path', 'g')
+                .attr('class', 'link')
+                .attr('d', (d) => {
+                var o = { x: source.x0, y: source.y0, parent: { x: source.x0, y: source.y0 } };
+                return this.connector(o);
+            });
+            link.merge(linkEnter).transition()
+                .duration(this.duration)
+                .attr('d', this.connector);
+            link.exit().transition()
+                .duration(this.duration)
+                .attr('d', (d) => {
+                var o = { x: source.x, y: source.y, parent: { x: source.x, y: source.y } };
+                return this.connector(o);
+            })
+                .remove();
+            nodesSort.forEach(function (d) {
+                d.x0 = d.x;
+                d.y0 = d.y;
+            });
+        };
+    }
+
+    $onInit() {
+        this.margin = { top: 20, right: 10, bottom: 20, left: 10 };
+        this.width = 1400 - this.margin.right - this.margin.left;
+        this.height = 800 - this.margin.top - this.margin.bottom;
+        this.barHeight = 20;
+        this.barWidth = this.width * .8;
+        this.i = 0;
+        this.duration = 750;
+        this.tree = tree().size([this.width, this.height]);
+        this.tree = tree().nodeSize([0, 30]);
+        this.root = this.tree(hierarchy(data));
+        this.root.each((d) => {
+            d.name = d.id;
+            d.id = this.i;
+            this.i++;
+        });
+        this.root.x0 = this.root.x;
+        this.root.y0 = this.root.y;
+        this.svg = select('.hierarchy-container').append('svg')
+            .attr('width', this.width + this.margin.right + this.margin.left)
+            .attr('height', this.height + this.margin.top + this.margin.bottom)
+            .append('g')
+            .attr('transform', 'translate(' + this.margin.left + ',' + this.margin.top + ')');
+        this.update(this.root);
+    }
+};
+
+let myTree = new MyTree();
+myTree.$onInit();
+</script>
+</body>
+</html>
