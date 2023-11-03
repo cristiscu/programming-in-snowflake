@@ -1,0 +1,5 @@
+streamlit
+snowflake-snowpark-python
+networkx
+pyvis
+plotly

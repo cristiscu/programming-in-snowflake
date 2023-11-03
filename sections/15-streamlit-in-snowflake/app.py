@@ -1,19 +1,19 @@
-import json, urllib.parse
+import json
 import streamlit as st
-import streamlit.components.v1 as components
-import m2_hierarchical, m3_graphs, m4_charts, m5_animated, m6_connect
+import m2_hierarchical, m3_graphs, m4_charts, m6_connect
 
 # setup page and create tabs
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")
 st.caption("Display your hierarchical data with charts and graphs.")
 
-tabSource, tabHierarchy, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
-    ["Source", "Hierarchy", "Format", "Graph", "Chart", "Animated"])
+tabSource, tabHierarchy, tabFormat, tabGraph, tabChart = st.tabs(
+    ["Source", "Hierarchy", "Format", "Graph", "Chart"])
 
 # show source as data frame
 with tabSource:
-    defTableName = "employees.public.employee_manager2"
+    defTableName = "hierarchy_data_viewer.public.employees"
+    #defTableName = "employees.public.employee_manager2"
     tableName = st.text_input("Table or view full name:", value=defTableName)
     st.button("Refresh")
     query = f"select * from {tableName}"
@@ -55,14 +55,12 @@ with tabFormat:
     elif sel == "XML":
         xml = f'<?xml version="1.0" encoding="utf-8"?>\n{m2_hierarchical.getXml(root)}'
         st.code(xml, language="xml", line_numbers=True)
-    else:
+    elif sel == "YAML":
         st.code(m2_hierarchical.getYaml(root), language="yaml", line_numbers=True)
 
 # show as GraphViz graph
 with tabGraph:
     graph = m3_graphs.getEdges(df, idx_label, idx_parent)
-    url = f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(graph)}'
-    st.link_button("Visualize Online", url)
     st.graphviz_chart(graph)
 
 # show as Plotly chart
@@ -76,24 +74,7 @@ with tabChart:
         fig = m4_charts.makeIcicle(labels, parents)
     elif sel == "Sunburst":
         fig = m4_charts.makeSunburst(labels, parents)
-    else:
+    elif sel == "Sankey":
         fig = m4_charts.makeSankey(labels, parents)
     st.plotly_chart(fig, use_container_width=True)
 
-# show as D3 animated chart
-with tabAnim:
-    sel = st.selectbox(
-        "Select a D3 chart type:",
-        options=["Collapsible Tree", "Linear Dendrogram",
-            "Radial Dendrogram", "Network Graph"])
-    if sel == "Collapsible Tree":
-        filename = m5_animated.makeCollapsibleTree(df, idx_label, idx_parent)
-    elif sel == "Linear Dendrogram":
-        filename = m5_animated.makeLinearDendrogram(df, idx_label, idx_parent)
-    elif sel == "Radial Dendrogram":
-        filename = m5_animated.makeRadialDendrogram(df, idx_label, idx_parent)
-    else:
-        filename = m5_animated.makeNetworkGraph(df, idx_label, idx_parent)
-
-    with open(filename, 'r', encoding='utf-8') as f:
-        components.html(f.read(), height=2200, width=1000)

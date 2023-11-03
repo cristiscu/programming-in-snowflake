@@ -1,6 +1,6 @@
 # after "pip install pyvis"
 from pyvis.network import Network
-import os, json, webbrowser
+import os, json
 import pandas as pd
 
 def makeCollapsibleTree(df, idx_label, idx_parent):
