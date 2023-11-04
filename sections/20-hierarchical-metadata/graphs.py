@@ -101,27 +101,38 @@ def getAllTasks(rows, skipDatabase=False, skipSchema=False):
         + '}')
     return graph
 
-def getUsersAndRoles(users, roles, showSystem, showUsers):
+def getUsersAndRoles(users, roles, showSystem, showUsers, showGroups):
 
     sysroles = [ "ACCOUNTADMIN", "SYSADMIN", "USERADMIN",
         "SECURITYADMIN", "ORGADMIN", "PUBLIC", "ORGADMIN" ];
 
     nodes = ""
+    if showGroups:
+        nodes += f'  subgraph cluster_0 {{\n\tstyle="dotted";\n\tlabel="roles";\n\n'
     for name in roles:
         if name not in sysroles or showSystem:
             fillcolor = "#e6c6d6" if name in sysroles else "#ededed"
             nodes += f'\t"{name}" [style="filled" fillcolor="{fillcolor}"];\n'
+    if showGroups:
+        nodes += '\t}\n'
+
     if showUsers:
+        if showGroups:
+            nodes += f'  subgraph cluster_1 {{\n\tstyle="dotted";\n\tlabel="users";\n\n'
         for name in users:
             nodes += f'\t"{name}" [shape="ellipse" style="dashed"];\n'
+        if showGroups:
+            nodes += '\t}\n'
 
-    edges = ""
+    edges = '\t// role hierarchy\n'
     for name in roles.keys():
         if name not in sysroles or showSystem:
             for role in roles[name]:
                 if role not in sysroles or showSystem:
                     edges += f'\t"{name}" -> "{role}";\n'
+
     if showUsers:
+        edges += '\n\t// user roles\n'
         for name in users.keys():
             for role in users[name]:
                 if role not in sysroles or showSystem:

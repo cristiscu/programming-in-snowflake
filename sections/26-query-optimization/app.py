@@ -31,8 +31,8 @@ if rows is None: st.stop()
 df = pd.DataFrame(rows).convert_dtypes()
 if df.size == 0: st.warning("No data!"); st.stop()
 
-tabQuery, tabExplain, tabAnalysis, tabGraph, tabMetadata \
-    = st.tabs(["Query", "Explain", "Graph", "Analysis", "Metadata"])
+tabQuery, tabAnalysis, tabGraph, tabMetadata, tabExplain \
+    = st.tabs(["Query", "Analysis", "Graph", "Metadata", "Explain"])
 
 with tabQuery:
     st.code(queryText)
@@ -41,9 +41,6 @@ with tabQuery:
         dfQ = pd.DataFrame(rowsQ).convert_dtypes()
         st.dataframe(dfQ.head(1000), use_container_width=True)
         st.write("Max 1,000 rows are displayed here.")
-
-with tabExplain:
-    st.code(QueryAnalyzer.getExplain(queryText))
 
 with tabAnalysis:
     st.code(analyzer.getAnalysis())
@@ -64,3 +61,6 @@ with tabMetadata:
     st.dataframe(df.head(1000), use_container_width=True)
     st.write("Max 1,000 rows are displayed here.")
 
+with tabExplain:
+    st.code(f"explain using text\n\t{queryText}")
+    st.code(QueryAnalyzer.getExplain(queryText))

@@ -44,11 +44,13 @@ elif op == "Users and Roles":
 
     showUsers = st.sidebar.checkbox("Show Users", value=True)
     showSystem = st.sidebar.checkbox("Show System Roles", value=True)
+    showGroups = st.sidebar.checkbox("Group by Object Types", value=True)
 
     tabGraph, tabUsers, tabRoles = st.tabs(["Graph", "Users", "Roles"])
     with tabGraph:
         users, roles = queries.getUsersAndRoles()
-        graphs.getGraph(graphs.getUsersAndRoles(users, roles, showSystem, showUsers))
+        graphs.getGraph(graphs.getUsersAndRoles(
+            users, roles, showSystem, showUsers, showGroups))
 
     with tabUsers:
         query = "show users"

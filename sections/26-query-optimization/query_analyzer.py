@@ -311,6 +311,7 @@ class QueryAnalyzer:
         return self.msg
 
     # get query profile info query
+    # see https://docs.snowflake.com/en/sql-reference/functions/get_query_operator_stats
     def getQueryProfileQuery(self):
         return f"select * from table(get_query_operator_stats('{self.queryId}'))";
 
@@ -334,7 +335,7 @@ class QueryAnalyzer:
 
     @classmethod
     def getExplain(cls, queryText):
-        query = f"explain using text {queryText}"
+        query = f"explain using text\n\t{queryText}"
         rows = utils.runQuery(query)
         return str(rows[0][0])
 
