@@ -50,14 +50,14 @@ from snowflake.account_usage.access_history,
         search = f'{database}.{schema}.' if schema is not None else f'{database}.'
         query = f"""
 select distinct
-substr(directSources.value:objectName, len('{search}')+1) as source,
-substr(objects_modified.value:objectName, len('{search}')+1) as target
+  substr(directSources.value:objectName, len('{search}')+1) as source,
+  substr(objects_modified.value:objectName, len('{search}')+1) as target
 from snowflake.account_usage.access_history,
-lateral flatten(input => objects_modified) objects_modified,
-lateral flatten(input => objects_modified.value:"columns", outer => true) cols,
-lateral flatten(input => cols.value:directSources, outer => true) directSources
+  lateral flatten(input => objects_modified) objects_modified,
+  lateral flatten(input => objects_modified.value:"columns", outer => true) cols,
+  lateral flatten(input => cols.value:directSources, outer => true) directSources
 where directSources.value:objectName like '{search}%'
-or objects_modified.value:objectName like '{search}%'
+  or objects_modified.value:objectName like '{search}%'
 """
     return query, utils.runQuery(query)
 
@@ -66,10 +66,10 @@ def getObjDeps(database, schema):
     query = "select * from snowflake.account_usage.object_dependencies"
     if database is not None:
         query += (f"\nwhere referenced_database = '{database}'"
-            + f"\n and referencing_database = '{database}'")
+            + f"\n  and referencing_database = '{database}'")
         if schema is not None:
-            query += (f"\n and referenced_schema = '{schema}'"
-                + f"\n and referencing_schema = '{schema}'")
+            query += (f"\n  and referenced_schema = '{schema}'"
+                + f"\n  and referencing_schema = '{schema}'")
     return query, utils.runQuery(query)
 
 # Task Graph

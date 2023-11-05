@@ -8,10 +8,9 @@ st.caption("Display your Snowflake hierarchical metadata with graphs.")
 
 ops = [
     "Entity-Relationship Diagram",
-    "Users and Roles",
+    "Security (Users and Roles)",
     "Object Dependencies",
     "Data Lineage",
-    "Tag Lineage",
     "Task Workflows",
 ]
 op = st.sidebar.selectbox("Operation", ops)
@@ -40,17 +39,21 @@ if op == "Entity-Relationship Diagram":
         st.write("Max 1,000 rows are displayed here.")
 
 # =================================================================
-elif op == "Users and Roles":
+elif op == "Security (Users and Roles)":
 
     showUsers = st.sidebar.checkbox("Show Users", value=True)
-    showSystem = st.sidebar.checkbox("Show System Roles", value=True)
-    showGroups = st.sidebar.checkbox("Group by Object Types", value=True)
+    showRoles = st.sidebar.checkbox("Show Custom Roles", value=True)
+    showSystemRoles = st.sidebar.checkbox("Show System-Defined Roles", value=True)
+    showGroups = st.sidebar.checkbox("Show User/Role Groups", value=True)
+    if not showUsers and not showRoles and not showSystemRoles:
+        st.warning("Show at least some users or roles!")
+        st.stop()
 
     tabGraph, tabUsers, tabRoles = st.tabs(["Graph", "Users", "Roles"])
     with tabGraph:
         users, roles = queries.getUsersAndRoles()
-        graphs.getGraph(graphs.getUsersAndRoles(
-            users, roles, showSystem, showUsers, showGroups))
+        graphs.getGraph(graphs.getUsersAndRoles(users, roles,
+            showUsers, showRoles, showSystemRoles, showGroups))
 
     with tabUsers:
         query = "show users"
@@ -65,10 +68,6 @@ elif op == "Users and Roles":
         df = pd.DataFrame(rows).convert_dtypes()
         st.code(query)
         st.dataframe(df, use_container_width=True)
-
-# =================================================================
-elif op == "Tag Lineage":
-    pass
 
 # =================================================================
 elif op == "Data Lineage":

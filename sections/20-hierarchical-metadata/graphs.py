@@ -19,7 +19,9 @@ def getFkDeps(rows):
 
     edges, links = "", set()
     for row in rows:
-        link = f'\t"{str(row["fk_table_name"])}" -> "{str(row["pk_table_name"])}";\n'
+        pk, fk = str(row["pk_table_name"]), str(row["fk_table_name"])
+        style = ' [style="dashed"]' if pk == fk else ''
+        link = f'\t"{fk}" -> "{pk}"{style};\n'
         if link not in links: links.add(link); edges += link
 
     graph = ('digraph {\n'
@@ -35,13 +37,14 @@ def getDataLineage(rows):
 
     edges = ""
     for row in rows:
-        nFrom = str(row[0]) if row[0] is not None else ' '
-        nTo = str(row[1]) if row[1] is not None else ' '
-        edges += f'\t"{nFrom}" -> "{nTo}";\n'
+        nFrom = str(row[0]) if row[0] is not None and len(str(row[0])) > 0 else ' '
+        nTo = str(row[1]) if row[1] is not None and len(str(row[1])) > 0 else ' '
+        if nFrom != ' ' or nTo != ' ': edges += f'\t"{nFrom}" -> "{nTo}";\n'
 
     graph = ('digraph {\n'
         + '\tgraph [rankdir="LR"]\n'
         + '\tnode [shape="rect"]\n\n'
+        + f'\t " " [shape="ellipse"];\n\n'
         + f'{edges}'
         + '}')
     return graph
@@ -101,46 +104,63 @@ def getAllTasks(rows, skipDatabase=False, skipSchema=False):
         + '}')
     return graph
 
-def getUsersAndRoles(users, roles, showSystem, showUsers, showGroups):
+def getUsersAndRoles(users, roles,
+    showUsers, showRoles, showSystemRoles, showGroups):
 
     sysroles = [ "ACCOUNTADMIN", "SYSADMIN", "USERADMIN",
         "SECURITYADMIN", "ORGADMIN", "PUBLIC", "ORGADMIN" ];
 
     nodes = ""
-    if showGroups:
-        nodes += f'  subgraph cluster_0 {{\n\tstyle="dotted";\n\tlabel="roles";\n\n'
-    for name in roles:
-        if name not in sysroles or showSystem:
-            fillcolor = "#e6c6d6" if name in sysroles else "#ededed"
-            nodes += f'\t"{name}" [style="filled" fillcolor="{fillcolor}"];\n'
-    if showGroups:
-        nodes += '\t}\n'
+    if showRoles or showSystemRoles:
+        if showGroups:
+            nodes += '\t// roles\n'
+            nodes += f'\tsubgraph cluster_0 {{\n\tstyle="dotted";\n\tlabel="roles";\n\n'
+        for name in roles:
+            if ((showSystemRoles and name in sysroles)
+                or (showRoles and name not in sysroles)):
+                fillcolor = "#e6c6d6" if name in sysroles else "#ededed"
+                nodes += f'\t"{name}" [style="filled" fillcolor="{fillcolor}"];\n'
+        if showGroups:
+            nodes += '\t}\n\n'
 
     if showUsers:
         if showGroups:
-            nodes += f'  subgraph cluster_1 {{\n\tstyle="dotted";\n\tlabel="users";\n\n'
+            nodes += '\t// users\n'
+            nodes += f'\tsubgraph cluster_1 {{\n\tstyle="dotted";\n\tlabel="users";\n\n'
         for name in users:
             nodes += f'\t"{name}" [shape="ellipse" style="dashed"];\n'
         if showGroups:
-            nodes += '\t}\n'
+            nodes += '\t}\n\n'
 
     edges = '\t// role hierarchy\n'
-    for name in roles.keys():
-        if name not in sysroles or showSystem:
-            for role in roles[name]:
-                if role not in sysroles or showSystem:
-                    edges += f'\t"{name}" -> "{role}";\n'
+    if showSystemRoles:
+        edges += '\t"SYSADMIN" -> "PUBLIC" [style="dotted"];\n'
+        edges += '\t"USERADMIN" -> "PUBLIC" [style="dotted"];\n'
+        edges += '\t"ACCOUNTADMIN" -> "ORGADMIN" [style="dotted"];\n'
+    if showRoles or showSystemRoles:
+        for name in roles.keys():
+            if ((showSystemRoles and name in sysroles)
+                or (showRoles and name not in sysroles)):
+                if (showSystemRoles and name not in sysroles
+                    and "PUBLIC" not in roles[name]):
+                    edges += f'\t"{name}" -> "PUBLIC" [style="dotted"];\n'
+                for role in roles[name]:
+                    if ((showSystemRoles and role in sysroles)
+                        or (showRoles and role not in sysroles)):
+                        edges += f'\t"{name}" -> "{role}";\n'
 
-    if showUsers:
+    if showUsers and (showRoles or showSystemRoles):
         edges += '\n\t// user roles\n'
         for name in users.keys():
             for role in users[name]:
-                if role not in sysroles or showSystem:
+                if ((showSystemRoles and role in sysroles)
+                    or (showRoles and role not in sysroles)):
                     edges += f'\t"{name}" -> "{role}" [style="dashed"];\n'
 
     graph = ('digraph {\n'
-        + '\tgraph [rankdir="LR"]\n'
-        + '\tnode [shape="rect"]\n\n'
+        + '\tgraph [rankdir="TB"]\n' # splines="ortho"
+        + '\tnode [shape="rect"]\n'
+        + '\tedge [dir="back"]\n\n'
         + f'{nodes}\n'
         + f'{edges}'
         + '}')
