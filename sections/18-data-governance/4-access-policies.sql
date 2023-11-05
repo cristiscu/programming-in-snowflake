@@ -1,3 +1,6 @@
+-- select database and schema
+use schema employees.public;
+
 -- (1) partially mask year of HIREDATE to new role RESEARCH
 use role accountadmin;
 
@@ -39,7 +42,23 @@ use role research;
 select * from emp;
 select * from emp_r;
 
--- (3) restrict role RESEARCH through row access policy
+-- (3) tag-based masking policy
+CREATE TAG security_class ALLOWED_VALUES 'PII', 'PCA', 'PHI';
+
+create masking policy research_on_year_tag
+  as (hiredate date) returns date ->
+  case when SYSTEM$GET_TAG_ON_CURRENT_COLUMN(
+     'EMPLOYEES.PUBLIC.SECURITY_CLASS') <> 'PII' then hiredate
+  else date_from_parts(2000, month(hiredate), day(hiredate)) end;
+
+ALTER TAG security_class
+  SET MASKING POLICY research_on_year_tag;
+
+ALTER TABLE emp
+  ALTER COLUMN hiredate
+  SET TAG security_class = 'PII';
+
+-- (4) restrict role RESEARCH through row access policy
 use role accountadmin;
 grant select on table employees.public.emp to role research;
 
