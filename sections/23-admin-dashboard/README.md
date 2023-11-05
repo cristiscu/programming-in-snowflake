@@ -1,10 +1,8 @@
-Admin Dashboard Queries
-=======================
+# Admin Dashboard in Snowsight
 
 From **[Monitoring Snowflake with Snowsight](https://medium.com/snowflake/monitoring-snowflake-with-snowsight-e9990a2898f1)**, written by a Ashish Patel, Data Engineer at Snowflake.
 
-Setup Instructions
-------------------
+## Setup Instructions
 
 1. In Snowsight, connect with ACCOUNTADMIN role, or role with access to SNOWFLAKE.ACCOUNT_USAGE schema.
 2. Create a new "Admin Dashboard" dashboard, with your role and COMPUTE_WH as warehouse.
@@ -15,8 +13,7 @@ Setup Instructions
 7. Arrange on the dashboard according to the tile number (ex: 7.2. means row 7, column 2).
 8. Filter by :daterange (by default last day).
 
-SQL Files/Queries
------------------
+## SQL Files/Queries
 
 1.1. Credits Used <-- **metering_history**
 
