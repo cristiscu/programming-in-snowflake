@@ -1,3 +1,7 @@
+-- in data_pipelines.change_tracking schema
+create if not exists database data_pipelines;
+create or replace schema data_pipelines.change_tracking;
+
 -- source (table) --> target (table), w/ CHANGE_TRACKING
 CREATE OR REPLACE TABLE source(id INT, name STRING);
 ALTER TABLE source SET CHANGE_TRACKING = TRUE;

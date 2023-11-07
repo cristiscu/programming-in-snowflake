@@ -1,3 +1,7 @@
+-- in data_pipelines.streams_tasks schema
+create if not exists database data_pipelines;
+create or replace schema data_pipelines.streams_tasks;
+
 -- source (table) --> source_s (stream) --> target (table)
 CREATE OR REPLACE TABLE source(id INT, name STRING);
 CREATE OR REPLACE STREAM source_s ON TABLE source;

@@ -1,3 +1,7 @@
+-- in data_pipelines.dyn_tables schema
+create if not exists database data_pipelines;
+create or replace schema data_pipelines.dyn_tables;
+
 -- source (table) --> dyn_table (dynamic table)
 CREATE TABLE source(id INT, name STRING);
 

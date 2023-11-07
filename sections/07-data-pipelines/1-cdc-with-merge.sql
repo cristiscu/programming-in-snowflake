@@ -1,3 +1,7 @@
+-- in data_pipelines.cdc schema
+create if not exists database data_pipelines;
+create or replace schema data_pipelines.cdc;
+
 -- source (table) --> target (table), w/ MERGE in stored proc
 CREATE OR REPLACE TABLE source(del BOOLEAN, id INT, name STRING);
 CREATE OR REPLACE TABLE target(id INT, name STRING);

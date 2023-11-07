@@ -1,3 +1,0 @@
-# Snowflake SQL REST API
-
-...

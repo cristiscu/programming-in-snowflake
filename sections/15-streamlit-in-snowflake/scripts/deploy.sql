@@ -16,6 +16,9 @@ COPY INTO employees FROM @stage/data
     FILE_FORMAT = (TYPE=CSV SKIP_HEADER=1 FIELD_OPTIONALLY_ENCLOSED_BY='"'
         NULL_IF='' EMPTY_FIELD_AS_NULL=true);
 
+CREATE TABLE audit_users (start timestamp, user varchar);
+CREATE TABLE audit_queries (start timestamp, query varchar);
+
 PUT &CRT_DIR\*.py @stage
     overwrite=true auto_compress=false;
 PUT &CRT_DIR\environment.yml @stage
