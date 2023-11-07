@@ -1,0 +1,13 @@
+manifest_version: 1
+version:
+  name: Hierarchical Data App
+  label: "v1_0"
+  comment: "Display your parent-child data pairs in a better manner."
+
+artifacts:
+  readme: src/README.md
+  setup_script: src/setup.sql
+
+configuration:
+  log_level: debug
+  trace_level: always
