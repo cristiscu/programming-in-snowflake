@@ -1,3 +1,6 @@
+-- select context
+use schema employees.public;
+
 - insert inline JSON --> VARIANT
 create or replace table json(name string, v variant) as
   select 'John', parse_json($${

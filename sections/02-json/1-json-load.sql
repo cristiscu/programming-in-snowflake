@@ -1,5 +1,8 @@
 -- Customer Request 2 --> JSON processing
 
+-- select context
+use schema employees.public;
+
 create or replace file format myjsonformat
   TYPE = json;
 
