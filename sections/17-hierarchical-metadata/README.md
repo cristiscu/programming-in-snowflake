@@ -1,3 +1,3 @@
-# Hierarchical Metadata Viewer
+# Section: Hierarchical Metadata Viewer
 
 ...

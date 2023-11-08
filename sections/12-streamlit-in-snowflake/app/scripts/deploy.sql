@@ -1,5 +1,5 @@
 !set variable_substitution=true
-!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\15-streamlit-in-snowflake
+!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\12-streamlit-in-snowflake\app
 
 CREATE OR REPLACE DATABASE hierarchy_data_viewer;
 -- cleanup all with: DROP DATABASE IF EXISTS hierarchy_data_viewer;

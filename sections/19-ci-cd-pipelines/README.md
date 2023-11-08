@@ -1,3 +1,0 @@
-# CI/CD Pipelines with Snowflake
-
-...
