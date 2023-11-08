@@ -2,6 +2,10 @@ import json
 import streamlit as st
 import m2_hierarchical, m3_graphs, m4_charts, m6_connect
 
+# log messages (logger) + trace events (telemetry)
+import logger
+from snowflake import telemetry
+
 # setup page and create tabs
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")

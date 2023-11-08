@@ -16,9 +16,18 @@ COPY INTO employees FROM @stage/data
     FILE_FORMAT = (TYPE=CSV SKIP_HEADER=1 FIELD_OPTIONALLY_ENCLOSED_BY='"'
         NULL_IF='' EMPTY_FIELD_AS_NULL=true);
 
+-- create and configure event table
+CREATE OR REPLACE EVENT TABLE myevents;
+ALTER ACCOUNT SET EVENT_TABLE = myevents;
+SHOW PARAMETERS LIKE 'event_table' IN ACCOUNT;
+
+ALTER DATABASE hierarchy_data_viewer SET LOG_LEVEL = INFO;
+ALTER DATABASE hierarchy_data_viewer SET TRACE_LEVEL = ALWAYS;
+
 CREATE TABLE audit_users (start timestamp, user varchar);
 CREATE TABLE audit_queries (start timestamp, query varchar);
 
+-- transfer files, create STREAMLIT app
 PUT &CRT_DIR\*.py @stage
     overwrite=true auto_compress=false;
 PUT &CRT_DIR\environment.yml @stage
