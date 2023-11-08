@@ -1,3 +1,3 @@
-# Snowflake Data Pipelines
+# Section: Snowflake Data Pipelines
 
 ...

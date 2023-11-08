@@ -1,3 +1,3 @@
-# Data Analytics with Snowflake
+# Section: Data Analytics with Snowflake
 
 ...

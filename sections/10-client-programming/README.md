@@ -1,3 +1,3 @@
-# Client Programming with Snowflake
+# Section: Client Programming with Snowflake
 
 ...

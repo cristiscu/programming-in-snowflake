@@ -1,4 +1,4 @@
-# Admin Dashboard in Snowsight
+# Section: Admin Dashboard in Snowsight
 
 From **[Monitoring Snowflake with Snowsight](https://medium.com/snowflake/monitoring-snowflake-with-snowsight-e9990a2898f1)**, written by a Ashish Patel, Data Engineer at Snowflake.
 

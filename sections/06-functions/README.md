@@ -1,3 +1,3 @@
-# Snowflake Stored Procedures and Functions
+# Section: Snowflake Stored Procedures and Functions
 
 ...

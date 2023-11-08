@@ -1,3 +1,3 @@
-# Streamlit in Snowflake Section
+# Section: Streamlit in Snowflake
 
 ...

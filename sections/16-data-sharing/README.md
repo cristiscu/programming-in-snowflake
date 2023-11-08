@@ -1,3 +1,3 @@
-# Data Sharing in Snowflake
+# Section: Data Sharing in Snowflake
 
 ...

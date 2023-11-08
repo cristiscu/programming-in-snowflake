@@ -33,7 +33,7 @@ GRANT USAGE ON FUNCTION code.get_tree(varchar)
 
 -- add Streamlit object
 CREATE STREAMLIT code.hierarchical_data_code
-  FROM '/src'
+  FROM '/'
   MAIN_FILE = '/app.py';
 GRANT USAGE ON STREAMLIT code.hierarchical_data_code
   TO APPLICATION ROLE hierarchical_data_role;

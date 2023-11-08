@@ -1,3 +1,3 @@
-# Data Governance in Snowflake
+# Section: Data Governance in Snowflake
 
 ...

@@ -1,3 +1,3 @@
-# Access Control in Snowflake
+# Section: Access Control in Snowflake
 
 ...

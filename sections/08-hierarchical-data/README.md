@@ -1,3 +1,3 @@
-# Hierarchical Data Views
+# Section: Hierarchical Data Views
 
 ...

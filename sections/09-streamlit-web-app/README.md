@@ -1,3 +1,3 @@
-# Streamlit Web Applications
+# Section: Streamlit Web Applications
 
 ...

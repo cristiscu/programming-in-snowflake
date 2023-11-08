@@ -1,3 +1,3 @@
-# Advanced Analytics with Snowflake
+# Section: Advanced Analytics with Snowflake
 
 ...

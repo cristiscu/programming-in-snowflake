@@ -1,3 +1,3 @@
-# SQL Support and Snowflake Scripting
+# Section: SQL Support and Snowflake Scripting
 
 ...

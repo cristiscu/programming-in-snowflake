@@ -1,5 +1,5 @@
 !set variable_substitution=true
-!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\18-native-apps
+!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\18-native-apps\app
 
 DROP APPLICATION IF EXISTS hierarchical_data_app CASCADE;
 DROP APPLICATION PACKAGE IF EXISTS hierarchical_data_package;
@@ -33,9 +33,9 @@ COPY INTO shared.employees FROM @stage/data
         NULL_IF='' EMPTY_FIELD_AS_NULL=true);
 
 PUT &CRT_DIR\manifest.yml @stage overwrite=true auto_compress=false;
-PUT &CRT_DIR\src\README.md @stage/src overwrite=true auto_compress=false;
-PUT &CRT_DIR\src\setup.sql @stage/src overwrite=true auto_compress=false;
-PUT &CRT_DIR\src\*.py @stage/src overwrite=true auto_compress=false;
+PUT &CRT_DIR\README.md @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\setup.sql @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\*.py @stage overwrite=true auto_compress=false;
 LIST @stage;
 
 -- set app version
