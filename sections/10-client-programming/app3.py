@@ -78,8 +78,7 @@ with tabGraph:
 
 # show as Plotly chart
 with tabChart:
-    sel = st.selectbox(
-        "Select a chart type:",
+    sel = st.selectbox("Select a Plotly chart type:",
         options=["Treemap", "Icicle", "Sunburst", "Sankey"])
     if sel == "Treemap":
         fig = m4_charts.makeTreemap(labels, parents)
@@ -87,24 +86,25 @@ with tabChart:
         fig = m4_charts.makeIcicle(labels, parents)
     elif sel == "Sunburst":
         fig = m4_charts.makeSunburst(labels, parents)
-    else:
+    elif sel == "Sankey":
         fig = m4_charts.makeSankey(labels, parents)
     st.plotly_chart(fig, use_container_width=True)
 
 # show as D3 animated chart
 with tabAnim:
-    sel = st.selectbox(
-        "Select a D3 chart type:",
+    sel = st.selectbox("Select a D3 chart type:",
         options=["Collapsible Tree", "Linear Dendrogram",
-            "Radial Dendrogram", "Network Graph"])
+            "Radial Dendrogram", "Network Graph", "Circular Packing"])
     if sel == "Collapsible Tree":
         filename = m5_animated.makeCollapsibleTree(df, idx_label, idx_parent)
     elif sel == "Linear Dendrogram":
         filename = m5_animated.makeLinearDendrogram(df, idx_label, idx_parent)
     elif sel == "Radial Dendrogram":
         filename = m5_animated.makeRadialDendrogram(df, idx_label, idx_parent)
-    else:
+    elif sel == "Network Graph":
         filename = m5_animated.makeNetworkGraph(df, idx_label, idx_parent)
+    elif sel == "Circular Packing":
+        filename = m5_animated.makeCircularPacking(df, idx_label, idx_parent)
 
     with open(filename, 'r', encoding='utf-8') as f:
         components.html(f.read(), height=2200, width=1000)

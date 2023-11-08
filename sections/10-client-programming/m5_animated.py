@@ -9,6 +9,9 @@ def makeCollapsibleTree(df, idx_label, idx_parent):
 def makeLinearDendrogram(df, idx_label, idx_parent):
     return _makeTree("linear-dendrogram", df, idx_label, idx_parent)
 
+def makeCircularPacking(df, idx_label, idx_parent):
+    return _makeTree("circular-packing", df, idx_label, idx_parent)
+
 def _makeTree(template, df, idx_label, idx_parent):
 
     root = _getTree(df, idx_label, idx_parent)

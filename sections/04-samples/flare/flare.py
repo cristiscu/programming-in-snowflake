@@ -1,3 +1,4 @@
+# converts flare.json --> flare.csv - (child, parent) hierarchy
 import json
 
 with open("flare.json", "r") as f:

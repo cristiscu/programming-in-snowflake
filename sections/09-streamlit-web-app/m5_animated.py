@@ -1,6 +1,6 @@
 # after "pip install pyvis"
 from pyvis.network import Network
-import os, json, webbrowser
+import os, json
 import pandas as pd
 
 def makeCollapsibleTree(df, idx_label, idx_parent):
@@ -8,6 +8,9 @@ def makeCollapsibleTree(df, idx_label, idx_parent):
 
 def makeLinearDendrogram(df, idx_label, idx_parent):
     return _makeTree("linear-dendrogram", df, idx_label, idx_parent)
+
+def makeCircularPacking(df, idx_label, idx_parent):
+    return _makeTree("circular-packing", df, idx_label, idx_parent)
 
 def _makeTree(template, df, idx_label, idx_parent):
 
@@ -20,6 +23,47 @@ def _makeTree(template, df, idx_label, idx_parent):
     with open(filename, "w") as file:
         file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
     return os.path.abspath(filename)
+
+def makeRadialDendrogram(df, idx_label, idx_parent):
+
+    nodes = _getPath(df, idx_label, idx_parent)
+
+    # create HTML file from template customized with our JSON array
+    with open(f"animated/templates/radial-dendrogram.html", "r") as file:
+        content = file.read()
+    filename = 'animated/radial-dendrogram.html'
+    with open(filename, "w") as file:
+        file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
+    return os.path.abspath(filename)
+
+def makeNetworkGraph(df, idx_label, idx_parent):
+
+    data = Network(notebook=True, heading='')
+    data.barnes_hut(
+        gravity=-80000,
+        central_gravity=0.3,
+        spring_length=10.0,
+        spring_strength=1.0,
+        damping=0.09,
+        overlap=0)
+
+    for _, row in df.iterrows():
+        src = str(row.iloc[idx_label])
+        dst = str(row.iloc[idx_parent])
+        data.add_node(src)
+        data.add_node(dst)
+        data.add_edge(src, dst)
+
+    # set node size to number of child nodes
+    map = data.get_adj_list()
+    for node in data.nodes:
+        node["value"] = len(map[node["id"]])
+
+    filename = f'animated/network-graph.html'
+    data.show(filename)
+    return os.path.abspath(filename)
+
+# ================================================================
 
 def _getTree(df, idx_label, idx_parent):
     """
@@ -53,18 +97,6 @@ def _getTree(df, idx_label, idx_parent):
 
     return root
 
-def makeRadialDendrogram(df, idx_label, idx_parent):
-
-    nodes = _getPath(df, idx_label, idx_parent)
-
-    # create HTML file from template customized with our JSON array
-    with open(f"animated/templates/radial-dendrogram.html", "r") as file:
-        content = file.read()
-    filename = 'animated/radial-dendrogram.html'
-    with open(filename, "w") as file:
-        file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
-    return os.path.abspath(filename)
-
 def _getPath(df, idx_label, idx_parent):
     """
     [{ "id": "KING.JONES.SCOTT.ADAMS" },
@@ -93,30 +125,3 @@ def _getPath(df, idx_label, idx_parent):
             node = parent
 
     return [{ "id": node["id"] } for node in nodes.values()]
-
-def makeNetworkGraph(df, idx_label, idx_parent):
-
-    data = Network(notebook=True, heading='')
-    data.barnes_hut(
-        gravity=-80000,
-        central_gravity=0.3,
-        spring_length=10.0,
-        spring_strength=1.0,
-        damping=0.09,
-        overlap=0)
-
-    for _, row in df.iterrows():
-        src = str(row.iloc[idx_label])
-        dst = str(row.iloc[idx_parent])
-        data.add_node(src)
-        data.add_node(dst)
-        data.add_edge(src, dst)
-
-    # set node size to number of child nodes
-    map = data.get_adj_list()
-    for node in data.nodes:
-        node["value"] = len(map[node["id"]])
-
-    filename = f'animated/network-graph.html'
-    data.show(filename)
-    return os.path.abspath(filename)

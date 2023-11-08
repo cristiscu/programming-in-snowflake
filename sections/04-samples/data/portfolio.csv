@@ -1,0 +1,21 @@
+child,parent
+portfolio,
+Cash,portfolio
+Fixed Income,portfolio
+Equities,portfolio
+Alternative Investments,portfolio
+CHF,Cash
+EUR,Cash
+USD,Cash
+Sov and Corp Bonds,Fixed Income
+Em Mkts Bonds,Fixed Income
+High Yield Bonds,Fixed Income
+Switzerland,Equities
+Euroland,Equities
+Japan,Equities
+Australia,Equities
+Emerging Markets,Equities
+Real Estate,Alternative Investments
+Hedge Funds,Alternative Investments
+Commodities,Alternative Investments
+Eurozone,Real Estate

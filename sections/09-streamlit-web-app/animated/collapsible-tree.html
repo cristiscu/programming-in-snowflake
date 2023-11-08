@@ -27,54 +27,72 @@ let tree = d3.tree;
 let hierarchy = d3.hierarchy;
 let select = d3.select;
 let data = {
-    "name": "KING",
+    "name": "portfolio",
     "children": [
         {
-            "name": "BLAKE",
+            "name": "Cash",
             "children": [
                 {
-                    "name": "ALLEN"
+                    "name": "CHF"
                 },
                 {
-                    "name": "JAMES"
+                    "name": "EUR"
                 },
                 {
-                    "name": "MARTIN"
-                },
-                {
-                    "name": "TURNER"
-                },
-                {
-                    "name": "WARD"
+                    "name": "USD"
                 }
             ]
         },
         {
-            "name": "CLARK",
+            "name": "Fixed Income",
             "children": [
                 {
-                    "name": "MILLER"
+                    "name": "Sov and Corp Bonds"
+                },
+                {
+                    "name": "Em Mkts Bonds"
+                },
+                {
+                    "name": "High Yield Bonds"
                 }
             ]
         },
         {
-            "name": "JONES",
+            "name": "Equities",
             "children": [
                 {
-                    "name": "FORD",
+                    "name": "Switzerland"
+                },
+                {
+                    "name": "Euroland"
+                },
+                {
+                    "name": "Japan"
+                },
+                {
+                    "name": "Australia"
+                },
+                {
+                    "name": "Emerging Markets"
+                }
+            ]
+        },
+        {
+            "name": "Alternative Investments",
+            "children": [
+                {
+                    "name": "Real Estate",
                     "children": [
                         {
-                            "name": "SMITH"
+                            "name": "Eurozone"
                         }
                     ]
                 },
                 {
-                    "name": "SCOTT",
-                    "children": [
-                        {
-                            "name": "ADAMS"
-                        }
-                    ]
+                    "name": "Hedge Funds"
+                },
+                {
+                    "name": "Commodities"
                 }
             ]
         }

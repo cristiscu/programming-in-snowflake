@@ -1,0 +1,27 @@
+child,parent
+Animalia,
+Chordate,Animalia
+Arthropoda,Animalia
+Mammal,Chordate
+Insect,Arthropoda
+Primate,Mammal
+Carnivora,Mammal
+Diptera,Insect
+Hominidae,Primate
+Pongidae,Primate
+Felidae,Carnivora
+Muscidae,Diptera
+Homo,Hominidae
+Pan,Pongidae
+Felis,Felidae
+Musca,Muscidae
+Sapiens,Homo
+Troglodytes,Pan
+Domestica,Felis
+Leo,Felis
+Domestic,Musca
+Human,Sapiens
+Chimpanzee,Troglodytes
+House Cat,Domestica
+Lion,Leo
+Housefly,Domestic
