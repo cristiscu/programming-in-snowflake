@@ -28,7 +28,7 @@ with tabHierarchy:
     # from hierarchical_data_app.code schema
     query = f"select get_tree('{tableName}')"
     query = str(connect.getRows(query)[0][0])
-    # st.code(query)
+    st.code(query)
     df2 = connect.getDataFrame(query)
     if df2 is None: st.stop()
     st.dataframe(df2, use_container_width=True)

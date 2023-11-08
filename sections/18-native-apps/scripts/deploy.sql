@@ -1,5 +1,5 @@
 !set variable_substitution=true
-!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\21-native-apps
+!define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\18-native-apps
 
 DROP APPLICATION IF EXISTS hierarchical_data_app CASCADE;
 DROP APPLICATION PACKAGE IF EXISTS hierarchical_data_package;

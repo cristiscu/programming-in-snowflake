@@ -18,7 +18,8 @@ CREATE SECURE FUNCTION code.get_tree(tableName varchar)
   HANDLER = 'get_tree'
 AS $$
 def get_tree(tableName):
-  return f"""with recursive cte (level, name, child, parent, path) as (
+  return f"""
+with recursive cte (level, name, child, parent, path) as (
   select 1, $1, $1, $2, ' -> ' || $1
   from {tableName} where $2 is null
   union all

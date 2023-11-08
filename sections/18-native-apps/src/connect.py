@@ -12,13 +12,13 @@ def getSession():
     except:
         parser = configparser.ConfigParser()
         parser.read(os.path.join(os.path.expanduser('~'), ".snowsql/config"))
-        section = "connections.demo_conn"
+        section = "connections.my_conn"
         pars = {
             "account": parser.get(section, "accountname"),
             "user": parser.get(section, "username"),
             "password": os.environ['SNOWSQL_PWD'],
-            "database": "hierarchy_data_app",
-            "schema": "code_schema"
+            "database": "hierarchical_data_app",
+            "schema": "code"
         }
         return Session.builder.configs(pars).create()
 
