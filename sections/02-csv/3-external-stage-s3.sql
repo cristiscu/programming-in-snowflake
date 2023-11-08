@@ -37,8 +37,8 @@ use schema data_pipelines.public;
 create or replace stage mystage_s3
   url = 's3://snowflake-demo-8888/spool/'
   credentials = (
-    aws_key_id='AKIAW6WN772VQZAO3OIY'
-    aws_secret_key='lRKEe0kaSkV4a5IZIJvXFxNqKYzasbQy8Fe9u2AE');
+    aws_key_id='AKIAW6WN772VQZFGTOIY'
+    aws_secret_key='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');
 
 -- should see the uploaded CSV files from the S3 bucket/folders
 list @mystage_s3;

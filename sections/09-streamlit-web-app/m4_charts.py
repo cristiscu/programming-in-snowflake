@@ -11,6 +11,7 @@ def makeTreemap(labels, parents):
         parents=parents,
         root_color="lightgrey")
     fig = go.Figure(data)
+    fig.write_html(f'charts/treemap.html')
     return fig
 
 # see https://plotly.com/python/icicle-charts/
@@ -22,6 +23,7 @@ def makeIcicle(labels, parents):
         parents=parents,
         root_color="lightgrey")
     fig = go.Figure(data)
+    fig.write_html(f'charts/icicle.html')
     return fig
 
 # see https://plotly.com/python/sunburst-charts/
@@ -33,6 +35,7 @@ def makeSunburst(labels, parents):
         parents=parents,
         insidetextorientation='horizontal')
     fig = go.Figure(data)
+    fig.write_html(f'charts/sunburst.html')
     return fig
 
 # see https://plotly.com/python/sankey-diagram/
@@ -46,4 +49,5 @@ def makeSankey(labels, parents):
             label=labels,
             value=list(range(1, len(labels)))))
     fig = go.Figure(data)
+    fig.write_html(f'charts/sankey.html')
     return fig

@@ -8,7 +8,7 @@ def getEdges(df, idx_label, idx_parent):
     for _, row in df.iterrows():
         isRoot = pd.isna(row.iloc[idx_parent])
         if not isRoot:
-            edges += f"\t{row.iloc[idx_label]} -> {row.iloc[idx_parent]};\n"
+            edges += f'\t"{row.iloc[idx_label]}" -> "{row.iloc[idx_parent]}";\n'
     
     return f"digraph {{\n{edges}}}\n"
 
@@ -20,7 +20,7 @@ def getNodes(df, idx_label, idx_parent, idx_id, idx_parent_id):
         nodes += f'\tn{row.iloc[idx_id]} [label="{row.iloc[idx_label]}"];\n'
         isRoot = pd.isna(row.iloc[idx_parent])
         if not isRoot:
-            edges += f"\tn{row.iloc[idx_id]} -> n{row.iloc[idx_parent_id]};\n"
+            edges += f'\tn{row.iloc[idx_id]} -> n{row.iloc[idx_parent_id]};\n'
     
     return f"digraph {{\n{nodes}\n{edges}}}\n"
 
