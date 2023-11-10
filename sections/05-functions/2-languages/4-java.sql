@@ -1,21 +1,22 @@
 -- select test database and schema
-use schema employees.public;
+create database if not exists functions;
+use schema functions.public;
 
--- Python UDTF
--- https://docs.snowflake.com/en/developer-guide/udf/python/udf-python-tabular-functions
-create or replace function fcttPython(s string)
-  returns table(out varchar)
-  language python
-  runtime_version = '3.8'
-  handler = 'MyClass'
+-- Java UDF
+-- https://docs.snowflake.com/en/developer-guide/udf/java/udf-java-designing
+create or replace function fctJava(num float)
+  returns string
+  language java
+  runtime_version = 11
+  handler = 'MyClass.fct1'
 as $$
-class MyClass:
-  def process(self, s: str):
-    yield (s,)
-    yield (s,)
+  class MyClass {
+    public String fct1(float num) {
+      return "+" + Float.toString(num);
+  }}
 $$;
 
-select * from table(fcttPython('abc'));
+select fctJava(22.5);
 
 -- Java UDTF
 -- https://docs.snowflake.com/en/developer-guide/udf/java/udf-java-tabular-functions
@@ -38,3 +39,7 @@ as $$
 $$;
 
 select * from table(fcttJava('abc'));
+
+
+-- no stored procs w/o Snowpark!
+-- HANDLER required everywhere (w/ fct name / MyClass w/o process for UDTFs)
