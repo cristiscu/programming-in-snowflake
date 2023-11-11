@@ -1,4 +1,3 @@
-# after "pip install pyvis"
 from pyvis.network import Network
 import os, json, webbrowser
 import pandas as pd

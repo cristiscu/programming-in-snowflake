@@ -1,6 +1,7 @@
-# after "pip install plotly"
-import plotly.graph_objects as go
 import pandas as pd
+import numpy as np
+import plotly.graph_objects as go
+import plotly.figure_factory as ff
 
 # see https://plotly.com/python/treemaps/
 def makeTreemap(labels, parents):
@@ -52,10 +53,23 @@ def makeSankey(labels, parents):
     fig.write_html(f'charts/sankey.html')
     return fig
 
+"""
+# see https://plotly.com/python/dendrogram/
+# TODO: learn more
+def makeDendrogram(labels, parents):
+
+    fig = ff.create_dendrogram(
+        X=np.random.rand(len(labels), len(labels)+2),
+        labels=list(labels),
+        orientation='left')
+    fig.write_html(f'charts/dendrogram.html')
+    return fig
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 labels = df[df.columns[0]]
 parents = df[df.columns[1]]
+"""
+
 
 makeTreemap(labels, parents).show()
 print('Generated Treemap chart')
@@ -68,3 +82,6 @@ print('Generated Sunburst chart')
 
 makeSankey(labels, parents).show()
 print('Generated Sankey chart')
+
+# makeDendrogram(labels, parents).show()
+# print('Generated Dendrogram chart')
