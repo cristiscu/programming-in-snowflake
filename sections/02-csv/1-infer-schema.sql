@@ -18,6 +18,7 @@ create or replace file format mycsvformat
 -- (1) show inferred columns
 -- (2) use them to create table DDL
 -- (3) use them to create table directly
+-- see https://docs.snowflake.com/en/sql-reference/functions/infer_schema
 SELECT *
 FROM TABLE(INFER_SCHEMA(
   LOCATION => '@mystage',

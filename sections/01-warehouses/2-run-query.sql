@@ -1,14 +1,10 @@
--- establish context
+-- runs a query with a very large warehouse (128 nodes)
+-- expect to take almost 2 minutes!
+-- see https://docs.snowflake.com/en/user-guide/sample-data-tpcds
+
 USE SCHEMA snowflake_sample_data.tpcds_sf100tcl;
-
-CREATE OR REPLACE WAREHOUSE large_wh
-WITH
-  WAREHOUSE_SIZE = X4LARGE
-  AUTO_SUSPEND = 60
-  INITIALLY_SUSPENDED = FALSE;
-
--- USE WAREHOUSE large_wh;
--- USE WAREHOUSE compute_wh;
+USE WAREHOUSE LARGE_WH;
+ALTER SESSION SET use_cached_result = FALSE;
 
 select count(*)
 from store_sales, household_demographics, time_dim, store
