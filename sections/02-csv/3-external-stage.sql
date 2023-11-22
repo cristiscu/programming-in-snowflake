@@ -40,8 +40,8 @@ use schema employees.public;
 create or replace stage mystage_s3
   url = 's3://my-snowflake-bucket/data/'
   credentials = (
-    aws_key_id='AKIAW6WN772V123GTOIY'
-    aws_secret_key='lRKEe0kaSkV4123ZIJvXFxNqKYzasbQy8Fe9u2AE');
+    aws_key_id='AKIAW6W....V123GTOIY'
+    aws_secret_key='lRKEe0k....4123ZIJvXFxNqKYzasbQy8Fe9u2AE');
 
 -- should see the uploaded CSV files from the S3 data/ folder
 list @mystage_s3;
