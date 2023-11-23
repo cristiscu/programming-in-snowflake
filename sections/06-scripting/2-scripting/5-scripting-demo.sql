@@ -9,7 +9,7 @@ create or replace view employees as
 create or replace function get_tree_query()
   returns varchar
   language sql
-as $$$
+as $$
   SELECT 'with cte as (
       select e.employee as name,
         coalesce(coalesce(coalesce(
@@ -27,7 +27,7 @@ as $$$
     || name as name, path, title
   from cte
   order by path'
-$$$;
+$$;
 
 SELECT get_tree_query();
 
