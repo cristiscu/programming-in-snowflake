@@ -1,6 +1,6 @@
--- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+-- select context
+create database if not exists tests;
+use schema tests.public;
 
 -- Scala UDF
 -- https://docs.snowflake.com/en/developer-guide/udf/scala/udf-scala-scalar

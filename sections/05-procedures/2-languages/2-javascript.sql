@@ -1,6 +1,6 @@
--- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+-- select context
+create database if not exists tests;
+use schema tests.public;
 
 -- JavaScript stored procedure
 -- https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-javascript
@@ -13,6 +13,7 @@ as $$
 $$;
 
 call procJavaScript(22.5);
+-- select * from table(result_scan(last_query_id()));
 
 -- JavaScript UDF
 -- https://docs.snowflake.com/en/developer-guide/udf/javascript/udf-javascript-scalar-functions

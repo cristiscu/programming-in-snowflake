@@ -1,6 +1,6 @@
--- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+-- select context
+create database if not exists tests;
+use schema tests.public;
 
 -- Python UDF
 -- https://docs.snowflake.com/en/developer-guide/udf/python/udf-python-designing

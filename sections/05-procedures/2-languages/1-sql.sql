@@ -1,6 +1,6 @@
--- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+-- select context
+create database if not exists tests;
+use schema tests.public;
 
 -- SQL Scripting stored procedure
 -- https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-snowflake-scripting
@@ -12,6 +12,7 @@ as $$
 $$;
 
 call procSQL(22.5);
+-- select * from table(result_scan(last_query_id()));
 
 -- SQL Scripting UDF
 -- https://docs.snowflake.com/en/developer-guide/udf/sql/udf-sql-scalar-functions

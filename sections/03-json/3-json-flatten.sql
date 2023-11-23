@@ -1,5 +1,7 @@
 -- select context
-use schema employees.public;
+
+create database if not exists tests;
+use schema tests.public;
 
 /*
 [
