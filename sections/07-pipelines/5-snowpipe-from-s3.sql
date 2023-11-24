@@ -2,24 +2,14 @@
 -- for the s3://snowflake-demo-8888/spool/ bucket folder
 -- delete all previously loaded CSV files in the folder
 
--- establish context
 use schema employees.public;
 
--- create test target table
-create or replace table emp_s3 (
-   empno int,
-   ename varchar,
-   job varchar,
-   mgr int,
-   hiredate date,
-   sal float,
-   comm float,
-   deptno int);
+create table emp_pipe like emp;
 
-create pipe mypipe_s3
+create pipe mypipe
   auto_ingest = true
 as
-  copy into emp_s3 from @mystage_s3
+  copy into emp_pipe from @mystage_s3
     file_format = (type = 'CSV')
     on_error = 'CONTINUE';
 
@@ -31,7 +21,7 @@ show pipes;
 -- for "All object create events", w/ SNS Queue as ARN previously copied
 
 -- upload some CSV files in the folder
-select system$pipe_status('mypipe_s3');
+select system$pipe_status('mypipe');
 /*
 {
     "executionState": "RUNNING",
