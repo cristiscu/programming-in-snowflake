@@ -1,7 +1,8 @@
-import pandas as pd
-import json
+import json, pandas as pd
 
-def getJson(df, idx_label, idx_parent):
+indent = '  '
+
+def getJson(df):
     """
     { "name": "KING",
       "children": [{
@@ -17,17 +18,17 @@ def getJson(df, idx_label, idx_parent):
     # collect all nodes
     nodes = {}
     for _, row in df.iterrows():
-        name = row.iloc[idx_label]
+        name = row.iloc[0]
         nodes[name] = { "name": name }
 
     # move children under parents, and detect root
     root = None
     for _, row in df.iterrows():
-        node = nodes[row.iloc[idx_label]]
-        isRoot = pd.isna(row.iloc[idx_parent])
+        node = nodes[row.iloc[0]]
+        isRoot = pd.isna(row.iloc[1])
         if isRoot: root = node
         else:
-            parent = nodes[row.iloc[idx_parent]]
+            parent = nodes[row.iloc[1]]
             if "children" not in parent: parent["children"] = []
             parent["children"].append(node)
 
@@ -51,28 +52,35 @@ def getXml(node, level=0):
     """
 
     # add <object> and <name>
-    indent = '   '
-    s = f"{indent * level}<object>\n"
-    s += f"{indent * (level+1)}<name>{node['name']}</name>\n"
+    indent0 = indent * level
+    indent1 = indent0 + indent
+
+    s = '<?xml version="1.0" encoding="utf-8"?>\n' if level == 0 else ''
+    s += f"{indent0}<object>\n"
+    s += f"{indent1}<name>{node['name']}</name>\n"
 
     # recursively append the inner children
     if "children" in node:
-        s += f"{indent * (level+1)}<children>\n"
+        s += f"{indent1}<children>\n"
         for child in node["children"]:
             s += getXml(child, level+2)
-        s += f"{indent * (level+1)}</children>\n"
+        s += f"{indent1}</children>\n"
 
-    return f"{s}{indent * level}</object>\n"
+    s += f"{indent0}</object>\n"
+    return s
 
 def getYaml(node, level=0, first=False):
     """
     KING
     - BLAKE
-    - ALLEN
+      - ALLEN
         JAMES
         MARTIN
     ...
     """
+
+    indent0 = indent * level
+    indent1 = indent0 + '  '
 
     s = f"{node['name']}\n"
 
@@ -80,8 +88,7 @@ def getYaml(node, level=0, first=False):
     if "children" in node:
         first = True
         for child in node["children"]:
-            if first: s += f"{'  ' * level}- "
-            else: s += f"{'  ' * level}  "
+            s += f"{indent0}- " if first else indent1
             s += getYaml(child, level+1, first)
             first = False
 
@@ -92,14 +99,14 @@ df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
 # convert and save as JSON
 # validate at https://jsonlint.com/
-root = getJson(df, 0, 1)
+root = getJson(df)
 with open("data/employee-manager.json", "w") as f:
-    f.writelines(json.dumps(root, indent=3))
+    f.writelines(json.dumps(root, indent=len(indent)))
 print('Generated "data/employee-manager.json" file')
 
 # convert and save as XML
 # validate at https://www.liquid-technologies.com/online-xml-validator
-xml = f'<?xml version="1.0" encoding="utf-8"?>\n{getXml(root)}'
+xml = getXml(root)
 with open("data/employee-manager.xml", "w") as f:
     f.writelines(xml)
 print('Generated "data/employee-manager.xml" file')

@@ -64,12 +64,11 @@ def makeDendrogram(labels, parents):
         orientation='left')
     fig.write_html(f'charts/dendrogram.html')
     return fig
+"""
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 labels = df[df.columns[0]]
 parents = df[df.columns[1]]
-"""
-
 
 makeTreemap(labels, parents).show()
 print('Generated Treemap chart')

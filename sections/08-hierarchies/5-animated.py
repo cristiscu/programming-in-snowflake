@@ -2,18 +2,18 @@ from pyvis.network import Network
 import os, json, webbrowser
 import pandas as pd
 
-def makeCollapsibleTree(df, idx_label, idx_parent):
-    return _makeTree("collapsible-tree", df, idx_label, idx_parent)
+def makeCollapsibleTree(df):
+    return _makeTree("collapsible-tree", df)
 
-def makeLinearDendrogram(df, idx_label, idx_parent):
-    return _makeTree("linear-dendrogram", df, idx_label, idx_parent)
+def makeLinearDendrogram(df):
+    return _makeTree("linear-dendrogram", df)
 
-def makeCircularPacking(df, idx_label, idx_parent):
-    return _makeTree("circular-packing", df, idx_label, idx_parent)
+def makeCircularPacking(df):
+    return _makeTree("circular-packing", df)
 
-def _makeTree(template, df, idx_label, idx_parent):
+def _makeTree(template, df):
 
-    root = _getTree(df, idx_label, idx_parent)
+    root = _getTree(df)
 
     # create HTML file from template customized with our JSON
     with open(f"animated/templates/{template}.html", "r") as file:
@@ -23,7 +23,7 @@ def _makeTree(template, df, idx_label, idx_parent):
         file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
     return os.path.abspath(filename)
 
-def _getTree(df, idx_label, idx_parent):
+def _getTree(df):
     """
     { "name": "KING",
       "children": [{
@@ -45,19 +45,19 @@ def _getTree(df, idx_label, idx_parent):
     # move children under parents, and detect root
     root = None
     for _, row in df.iterrows():
-        node = nodes[row.iloc[idx_label]]
-        isRoot = pd.isna(row.iloc[idx_parent])
+        node = nodes[row.iloc[0]]
+        isRoot = pd.isna(row.iloc[1])
         if isRoot: root = node
         else:
-            parent = nodes[row.iloc[idx_parent]]
+            parent = nodes[row.iloc[1]]
             if "children" not in parent: parent["children"] = []
             parent["children"].append(node)
 
     return root
 
-def makeRadialDendrogram(df, idx_label, idx_parent):
+def makeRadialDendrogram(df):
 
-    nodes = _getPath(df, idx_label, idx_parent)
+    nodes = _getPath(df)
 
     # create HTML file from template customized with our JSON array
     with open(f"animated/templates/radial-dendrogram.html", "r") as file:
@@ -67,7 +67,7 @@ def makeRadialDendrogram(df, idx_label, idx_parent):
         file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
     return os.path.abspath(filename)
 
-def _getPath(df, idx_label, idx_parent):
+def _getPath(df):
     """
     [{ "id": "KING.JONES.SCOTT.ADAMS" },
     { "id": "KING.BLAKE.ALLEN" },
@@ -79,9 +79,9 @@ def _getPath(df, idx_label, idx_parent):
     # add nodes (to a local map)
     nodes, root = {}, None
     for _, row in df.iterrows():
-        name = row.iloc[idx_label]
+        name = row.iloc[0]
         node = { "id": name, "name": name }
-        if not pd.isna(row.iloc[1]): node["parent"] = row.iloc[idx_parent]
+        if not pd.isna(row.iloc[1]): node["parent"] = row.iloc[1]
         else: root = node
         nodes[name] = node
 
@@ -96,7 +96,7 @@ def _getPath(df, idx_label, idx_parent):
 
     return [{ "id": node["id"] } for node in nodes.values()]
 
-def makeNetworkGraph(df, idx_label, idx_parent):
+def makeNetworkGraph(df):
 
     data = Network(notebook=True, heading='')
     data.barnes_hut(
@@ -108,8 +108,8 @@ def makeNetworkGraph(df, idx_label, idx_parent):
         overlap=0)
 
     for _, row in df.iterrows():
-        src = str(row.iloc[idx_label])
-        dst = str(row.iloc[idx_parent])
+        src = str(row.iloc[0])
+        dst = str(row.iloc[1])
         data.add_node(src)
         data.add_node(dst)
         data.add_edge(src, dst)
@@ -126,22 +126,22 @@ def makeNetworkGraph(df, idx_label, idx_parent):
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
-filename = makeCollapsibleTree(df, 0, 1)
+filename = makeCollapsibleTree(df)
 print('Generated Collapsible Tree')
 webbrowser.open(filename)
 
-filename = makeLinearDendrogram(df, 0, 1)
+filename = makeLinearDendrogram(df)
 print('Generated Linear Dendrogram')
 webbrowser.open(filename)
 
-filename = makeRadialDendrogram(df, 0, 1)
+filename = makeRadialDendrogram(df)
 print('Generated Radial Dendrogram')
 webbrowser.open(filename)
 
-filename = makeNetworkGraph(df, 0, 1)
+filename = makeNetworkGraph(df)
 print('Generated Network Chart')
 webbrowser.open(filename)
 
-filename = makeCircularPacking(df, 0, 1)
+filename = makeCircularPacking(df)
 print('Generated Circular Packing')
 webbrowser.open(filename)

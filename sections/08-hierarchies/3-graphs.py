@@ -2,42 +2,42 @@ import webbrowser, urllib.parse
 import pandas as pd
 
 # digraph with edges only
-def getEdges(df, idx_label, idx_parent):
+def getEdges(df):
     
     edges = ""
     for _, row in df.iterrows():
-        isRoot = pd.isna(row.iloc[idx_parent])
+        isRoot = pd.isna(row.iloc[1])
         if not isRoot:
-            edges += f'\t"{row.iloc[idx_label]}" -> "{row.iloc[idx_parent]}";\n'
+            edges += f'\t"{row.iloc[0]}" -> "{row.iloc[1]}";\n'
     
     return f"digraph {{\n{edges}}}\n"
 
 # digraph with nodes and edges
-def getNodes(df, idx_label, idx_parent, idx_id, idx_parent_id):
+def getNodes(df):
     
     nodes, edges = "", ""
     for _, row in df.iterrows():
-        nodes += f'\tn{row.iloc[idx_id]} [label="{row.iloc[idx_label]}"];\n'
-        isRoot = pd.isna(row.iloc[idx_parent])
+        nodes += f'\tn{row.iloc[0]} [label="{row.iloc[0]}"];\n'
+        isRoot = pd.isna(row.iloc[1])
         if not isRoot:
-            edges += f"\tn{row.iloc[idx_id]} -> n{row.iloc[idx_parent_id]};\n"
+            edges += f"\tn{row.iloc[0]} -> n{row.iloc[1]};\n"
     
     return f"digraph {{\n{nodes}\n{edges}}}\n"
 
 # styled digraph with styled nodes and edges
-def getStyles(df, idx_label, idx_parent, idx_id, idx_parent_id):
+def getStyles(df):
 
     nodes, edges = "", ""
     for _, row in df.iterrows():
-        isRoot = pd.isna(row.iloc[idx_parent])
-        nodes += f'\tn{row.iloc[idx_id]} [label="{row.iloc[idx_label]}"'
+        isRoot = pd.isna(row.iloc[1])
+        nodes += f'\tn{row.iloc[0]} [label="{row.iloc[0]}"'
         if isRoot:
             nodes += f' shape="rect" color="red"'
         nodes += f'];\n'
 
         if not isRoot:
-            edges += f"\tn{row.iloc[idx_id]} -> n{row.iloc[idx_parent_id]}"
-            if row.iloc[idx_label] == "BLAKE" or row.iloc[idx_parent] == "BLAKE":
+            edges += f"\tn{row.iloc[0]} -> n{row.iloc[1]}"
+            if row.iloc[0] == "BLAKE" or row.iloc[1] == "BLAKE":
                 edges += f' [style="dashed"]'
             edges += ';\n'
 
@@ -48,6 +48,7 @@ def getStyles(df, idx_label, idx_parent, idx_id, idx_parent_id):
         + f'{nodes}\n{edges}}}\n')
 
 # go to online Graphviz Visual Editor w/ custom graph
+# see http://magjac.com/graphviz-visual-editor/
 def gotoUrl(dot):
     url = f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(dot)}'
     webbrowser.open(url)
@@ -55,11 +56,11 @@ def gotoUrl(dot):
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
-gotoUrl(getEdges(df, 0, 1))
+gotoUrl(getEdges(df))
 print('Generated DOT graph with edges')
 
-gotoUrl(getNodes(df, 0, 1, 2, 3))
+gotoUrl(getNodes(df))
 print('Generated DOT graph with nodes and edges')
 
-gotoUrl(getStyles(df, 0, 1, 2, 3))
+gotoUrl(getStyles(df))
 print('Generated styled DOT graph with styled nodes and edges')
