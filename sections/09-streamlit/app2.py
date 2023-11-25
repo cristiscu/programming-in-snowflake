@@ -1,8 +1,8 @@
-import json, urllib.parse
+import json
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
-import m2_hierarchical, m3_graphs, m4_charts, m5_animated
+import formats, graphs, charts, animated
 
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")
@@ -11,10 +11,6 @@ st.caption("Display your hierarchical data with charts and graphs.")
 # load default CSV file
 filename = "data/employee-manager.csv"
 df = pd.read_csv(filename).convert_dtypes()
-
-idx_label, idx_parent = 0, 1
-labels = df[df.columns[idx_label]]
-parents = df[df.columns[idx_parent]]
 
 # create tab control
 tabSource, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
@@ -30,35 +26,40 @@ with tabFormat:
         "Select a data format:",
         options=["JSON", "XML", "YAML"])
 
-    root = m2_hierarchical.getJson(df, idx_label, idx_parent)
+    root = formats.getJson(df)
     if sel == "JSON":
-        st.code(json.dumps(root, indent=3), language="json", line_numbers=True)
+        jsn = json.dumps(root, indent=3)
+        st.code(jsn, language="json", line_numbers=True)
     elif sel == "XML":
-        xml = f'<?xml version="1.0" encoding="utf-8"?>\n{m2_hierarchical.getXml(root)}'
+        xml = formats.getXml(root)
         st.code(xml, language="xml", line_numbers=True)
     else:
-        st.code(m2_hierarchical.getYaml(root), language="yaml", line_numbers=True)
+        yaml = formats.getYaml(root)
+        st.code(yaml, language="yaml", line_numbers=True)
 
 # show as GraphViz graph
 with tabGraph:
-    graph = m3_graphs.getEdges(df, idx_label, idx_parent)
-    url = f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(graph)}'
+    graph = graphs.getEdges(df)
+    url = graphs.getUrl(graph)
     st.link_button("Visualize Online", url)
     st.graphviz_chart(graph)
 
 # show as Plotly chart
 with tabChart:
+    labels = df[df.columns[0]]
+    parents = df[df.columns[1]]
+
     sel = st.selectbox(
         "Select a chart type:",
         options=["Treemap", "Icicle", "Sunburst", "Sankey"])
     if sel == "Treemap":
-        fig = m4_charts.makeTreemap(labels, parents)
+        fig = charts.makeTreemap(labels, parents)
     elif sel == "Icicle":
-        fig = m4_charts.makeIcicle(labels, parents)
+        fig = charts.makeIcicle(labels, parents)
     elif sel == "Sunburst":
-        fig = m4_charts.makeSunburst(labels, parents)
+        fig = charts.makeSunburst(labels, parents)
     else:
-        fig = m4_charts.makeSankey(labels, parents)
+        fig = charts.makeSankey(labels, parents)
     st.plotly_chart(fig, use_container_width=True)
 
 # show as D3 animated chart
@@ -68,13 +69,13 @@ with tabAnim:
         options=["Collapsible Tree", "Linear Dendrogram",
             "Radial Dendrogram", "Network Graph"])
     if sel == "Collapsible Tree":
-        filename = m5_animated.makeCollapsibleTree(df, idx_label, idx_parent)
+        filename = animated.makeCollapsibleTree(df)
     elif sel == "Linear Dendrogram":
-        filename = m5_animated.makeLinearDendrogram(df, idx_label, idx_parent)
+        filename = animated.makeLinearDendrogram(df)
     elif sel == "Radial Dendrogram":
-        filename = m5_animated.makeRadialDendrogram(df, idx_label, idx_parent)
+        filename = animated.makeRadialDendrogram(df)
     else:
-        filename = m5_animated.makeNetworkGraph(df, idx_label, idx_parent)
+        filename = animated.makeNetworkGraph(df)
 
     with open(filename, 'r', encoding='utf-8') as f:
         components.html(f.read(), height=2200, width=1000)

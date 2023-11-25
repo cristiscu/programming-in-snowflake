@@ -1,6 +1,7 @@
 from pyvis.network import Network
 import os, json, webbrowser
 import pandas as pd
+import formats
 
 def makeCollapsibleTree(df):
     return _makeTree("collapsible-tree", df)
@@ -13,7 +14,7 @@ def makeCircularPacking(df):
 
 def _makeTree(template, df):
 
-    root = _getTree(df)
+    root = formats.getJson(df)
 
     # create HTML file from template customized with our JSON
     with open(f"animated/templates/{template}.html", "r") as file:
@@ -23,78 +24,19 @@ def _makeTree(template, df):
         file.write(content.replace('"{{data}}"', json.dumps(root, indent=4)))
     return os.path.abspath(filename)
 
-def _getTree(df):
-    """
-    { "name": "KING",
-      "children": [{
-         "name": "BLAKE",
-         "children": [
-            { "name": "ALLEN" },
-            { "name": "JAMES" },
-            ...
-        ]}]
-    }
-    """
-
-    # collect all nodes
-    nodes = {}
-    for _, row in df.iterrows():
-        name = row.iloc[0]
-        nodes[name] = { "name": name }
-
-    # move children under parents, and detect root
-    root = None
-    for _, row in df.iterrows():
-        node = nodes[row.iloc[0]]
-        isRoot = pd.isna(row.iloc[1])
-        if isRoot: root = node
-        else:
-            parent = nodes[row.iloc[1]]
-            if "children" not in parent: parent["children"] = []
-            parent["children"].append(node)
-
-    return root
-
 def makeRadialDendrogram(df):
 
-    nodes = _getPath(df)
+    path = formats.getPath(formats.getJson(df), [])
 
     # create HTML file from template customized with our JSON array
     with open(f"animated/templates/radial-dendrogram.html", "r") as file:
         content = file.read()
-    filename = 'animated/radial-dendrogram.html'
+    content = content.replace('"{{data}}"', json.dumps(path, indent=2))
+
+    filename = os.path.abspath('animated/radial-dendrogram.html')
     with open(filename, "w") as file:
-        file.write(content.replace('"{{data}}"', json.dumps(nodes, indent=4)))
-    return os.path.abspath(filename)
-
-def _getPath(df):
-    """
-    [{ "id": "KING.JONES.SCOTT.ADAMS" },
-    { "id": "KING.BLAKE.ALLEN" },
-    { "id": "KING.BLAKE" },
-    { "id": "KING.CLARK" },
-    ...]
-    """
-
-    # add nodes (to a local map)
-    nodes, root = {}, None
-    for _, row in df.iterrows():
-        name = row.iloc[0]
-        node = { "id": name, "name": name }
-        if not pd.isna(row.iloc[1]): node["parent"] = row.iloc[1]
-        else: root = node
-        nodes[name] = node
-
-    # add node name prefixes
-    for key in nodes:
-        node = nodes[key]
-        nodeCrt = node
-        while node is not root:
-            parent = nodes[node["parent"]]
-            nodeCrt["id"] = f'{parent["name"]}.{nodeCrt["id"]}'
-            node = parent
-
-    return [{ "id": node["id"] } for node in nodes.values()]
+        file.write(content)
+    return filename
 
 def makeNetworkGraph(df):
 

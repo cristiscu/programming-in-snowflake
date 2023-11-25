@@ -94,6 +94,25 @@ def getYaml(node, level=0, first=False):
 
     return s
 
+def getPath(node, nodes, path=""):
+    """
+    [{ "id": "KING.JONES.SCOTT.ADAMS" },
+    { "id": "KING.BLAKE.ALLEN" },
+    { "id": "KING.BLAKE" },
+    { "id": "KING.CLARK" },
+    ...]
+    """
+
+    # append full path to the top of the current node
+    path += node["name"] if len(path) == 0 else f'.{node["name"]}'
+    nodes.append({ "id": path })
+
+    if "children" in node:
+        for child in node["children"]:
+            nodes = getPath(child, nodes, path)
+    return nodes
+
+
 # validate at https://toolkitbay.com/tkb/tool/csv-validator
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
@@ -118,3 +137,8 @@ with open("data/employee-manager.yaml", "w") as f:
     f.writelines(yaml)
 print('Generated "data/employee-manager.yaml" file')
 
+# get path for each node
+path = getPath(root, [])
+with open("data/employee-manager-path.json", "w") as f:
+    f.writelines(json.dumps(path, indent=len(indent)))
+print('Generated "data/employee-manager-path.json" file')

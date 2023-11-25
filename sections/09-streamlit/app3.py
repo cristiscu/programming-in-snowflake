@@ -1,9 +1,9 @@
-import json, urllib.parse
+import json
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
 from io import StringIO
-import m2_hierarchical, m3_graphs, m4_charts, m5_animated
+import formats, graphs, charts, animated
 
 @st.cache_data(show_spinner="Loading the CSV file...")
 def loadFile(filename):
@@ -22,17 +22,13 @@ with st.sidebar:
     if uploaded_file is not None:
         filename = StringIO(uploaded_file.getvalue().decode("utf-8"))
 
-    df = loadFile(filename)
-    cols = list(df.columns)
+    df_orig = loadFile(filename)
+    cols = list(df_orig.columns)
 
     # get child and parent column names and indices
-    fld_label = st.selectbox('Child Column Name', cols, index=0)
-    idx_label = cols.index(fld_label)
-    labels = df[df.columns[idx_label]]
-
-    fld_parent = st.selectbox('Parent Column Name', cols, index=1)
-    idx_parent = cols.index(fld_parent)
-    parents = df[df.columns[idx_parent]]
+    child = st.selectbox('Child Column Name', cols, index=0)
+    parent = st.selectbox('Parent Column Name', cols, index=1)
+    df = df_orig[[child, parent]]
 
 # create tab control
 tabSource, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
@@ -40,7 +36,7 @@ tabSource, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
 
 # show source as data frame
 with tabSource:
-    st.dataframe(df, use_container_width=True)
+    st.dataframe(df_orig, use_container_width=True)
 
 # show in another data format
 with tabFormat:
@@ -48,34 +44,39 @@ with tabFormat:
         "Select a data format:",
         options=["JSON", "XML", "YAML"])
 
-    root = m2_hierarchical.getJson(df, idx_label, idx_parent)
+    root = formats.getJson(df)
     if sel == "JSON":
-        st.code(json.dumps(root, indent=3), language="json", line_numbers=True)
+        jsn = json.dumps(root, indent=3)
+        st.code(jsn, language="json", line_numbers=True)
     elif sel == "XML":
-        xml = f'<?xml version="1.0" encoding="utf-8"?>\n{m2_hierarchical.getXml(root)}'
+        xml = formats.getXml(root)
         st.code(xml, language="xml", line_numbers=True)
     else:
-        st.code(m2_hierarchical.getYaml(root), language="yaml", line_numbers=True)
+        yaml = formats.getYaml(root)
+        st.code(yaml, language="yaml", line_numbers=True)
 
 # show as GraphViz graph
 with tabGraph:
-    graph = m3_graphs.getEdges(df, idx_label, idx_parent)
-    url = f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(graph)}'
+    graph = graphs.getEdges(df)
+    url = graphs.getUrl(graph)
     st.link_button("Visualize Online", url)
     st.graphviz_chart(graph)
 
 # show as Plotly chart
 with tabChart:
+    labels = df[df.columns[0]]
+    parents = df[df.columns[1]]
+
     sel = st.selectbox("Select a Plotly chart type:",
         options=["Treemap", "Icicle", "Sunburst", "Sankey"])
     if sel == "Treemap":
-        fig = m4_charts.makeTreemap(labels, parents)
+        fig = charts.makeTreemap(labels, parents)
     elif sel == "Icicle":
-        fig = m4_charts.makeIcicle(labels, parents)
+        fig = charts.makeIcicle(labels, parents)
     elif sel == "Sunburst":
-        fig = m4_charts.makeSunburst(labels, parents)
+        fig = charts.makeSunburst(labels, parents)
     elif sel == "Sankey":
-        fig = m4_charts.makeSankey(labels, parents)
+        fig = charts.makeSankey(labels, parents)
     st.plotly_chart(fig, use_container_width=True)
 
 # show as D3 animated chart
@@ -84,15 +85,15 @@ with tabAnim:
         options=["Collapsible Tree", "Linear Dendrogram",
             "Radial Dendrogram", "Network Graph", "Circular Packing"])
     if sel == "Collapsible Tree":
-        filename = m5_animated.makeCollapsibleTree(df, idx_label, idx_parent)
+        filename = animated.makeCollapsibleTree(df)
     elif sel == "Linear Dendrogram":
-        filename = m5_animated.makeLinearDendrogram(df, idx_label, idx_parent)
+        filename = animated.makeLinearDendrogram(df)
     elif sel == "Radial Dendrogram":
-        filename = m5_animated.makeRadialDendrogram(df, idx_label, idx_parent)
+        filename = animated.makeRadialDendrogram(df)
     elif sel == "Network Graph":
-        filename = m5_animated.makeNetworkGraph(df, idx_label, idx_parent)
+        filename = animated.makeNetworkGraph(df)
     elif sel == "Circular Packing":
-        filename = m5_animated.makeCircularPacking(df, idx_label, idx_parent)
+        filename = animated.makeCircularPacking(df)
 
     with open(filename, 'r', encoding='utf-8') as f:
         components.html(f.read(), height=2200, width=1000)

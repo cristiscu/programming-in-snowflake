@@ -47,20 +47,21 @@ def getStyles(df):
         + '\tedge [arrowhead="None"]\n\n'
         + f'{nodes}\n{edges}}}\n')
 
-# go to online Graphviz Visual Editor w/ custom graph
-# see http://magjac.com/graphviz-visual-editor/
-def gotoUrl(dot):
-    url = f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(dot)}'
-    webbrowser.open(url)
+# get URL to Graphviz Visual Editor, w/ custom graph
+def getUrl(dot):
+    return f'http://magjac.com/graphviz-visual-editor/?dot={urllib.parse.quote(dot)}'
 
 
 df = pd.read_csv("data/employee-manager.csv", header=0).convert_dtypes()
 
-gotoUrl(getEdges(df))
+url = getUrl(getEdges(df))
+webbrowser.open(url)
 print('Generated DOT graph with edges')
 
-gotoUrl(getNodes(df))
+url = getUrl(getNodes(df))
+webbrowser.open(url)
 print('Generated DOT graph with nodes and edges')
 
-gotoUrl(getStyles(df))
+url = getUrl(getStyles(df))
+webbrowser.open(url)
 print('Generated styled DOT graph with styled nodes and edges')
