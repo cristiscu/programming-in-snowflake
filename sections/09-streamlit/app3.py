@@ -1,40 +1,38 @@
-import json
-import pandas as pd
+import json, os
 import streamlit as st
 import streamlit.components.v1 as components
+import pandas as pd
 from io import StringIO
-import formats, graphs, charts, animated
-
-@st.cache_data(show_spinner="Loading the CSV file...")
-def loadFile(filename):
-    return pd.read_csv(filename).convert_dtypes()
+import graphs, formats, charts, animated, utils
 
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")
 st.caption("Display your hierarchical data with charts and graphs.")
 
+@st.cache_data(show_spinner="Loading the CSV file...")
+def loadFile(filename):
+    print(f"Loading {filename}...")
+    return pd.read_csv(filename).convert_dtypes()
+
 with st.sidebar:
-    # upload CSV file or use default one
     uploaded_file = st.file_uploader(
         "Upload a CSV file", type=["csv"], accept_multiple_files=False)
     
-    filename = "data/employee-manager.csv"
+    path = os.path.dirname(__file__)
+    filename = utils.getFullPath("data/employee-manager.csv")
     if uploaded_file is not None:
         filename = StringIO(uploaded_file.getvalue().decode("utf-8"))
 
     df_orig = loadFile(filename)
     cols = list(df_orig.columns)
 
-    # get child and parent column names and indices
-    child = st.selectbox('Child Column Name', cols, index=0)
-    parent = st.selectbox('Parent Column Name', cols, index=1)
+    child = st.selectbox("Child Column Name", cols, index=0)
+    parent = st.selectbox("Parent Column Name", cols, index=1)
     df = df_orig[[child, parent]]
 
-# create tab control
 tabSource, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
     ["Source", "Format", "Graph", "Chart", "Animated"])
 
-# show source as data frame
 with tabSource:
     st.dataframe(df_orig, use_container_width=True)
 
@@ -42,20 +40,22 @@ with tabSource:
 with tabFormat:
     sel = st.selectbox(
         "Select a data format:",
-        options=["JSON", "XML", "YAML"])
+        options=["JSON", "XML", "YAML", "JSON Path"])
 
     root = formats.getJson(df)
     if sel == "JSON":
-        jsn = json.dumps(root, indent=3)
+        jsn = json.dumps(root, indent=2)
         st.code(jsn, language="json", line_numbers=True)
     elif sel == "XML":
         xml = formats.getXml(root)
         st.code(xml, language="xml", line_numbers=True)
-    else:
+    elif sel == "YAML":
         yaml = formats.getYaml(root)
         st.code(yaml, language="yaml", line_numbers=True)
+    elif sel == "JSON Path":
+        jsn = json.dumps(formats.getPath(root, []), indent=2)
+        st.code(jsn, language="json", line_numbers=True)
 
-# show as GraphViz graph
 with tabGraph:
     graph = graphs.getEdges(df)
     url = graphs.getUrl(graph)
@@ -67,7 +67,8 @@ with tabChart:
     labels = df[df.columns[0]]
     parents = df[df.columns[1]]
 
-    sel = st.selectbox("Select a Plotly chart type:",
+    sel = st.selectbox(
+        "Select a chart type:",
         options=["Treemap", "Icicle", "Sunburst", "Sankey"])
     if sel == "Treemap":
         fig = charts.makeTreemap(labels, parents)
@@ -81,9 +82,10 @@ with tabChart:
 
 # show as D3 animated chart
 with tabAnim:
-    sel = st.selectbox("Select a D3 chart type:",
+    sel = st.selectbox(
+        "Select a D3 chart type:",
         options=["Collapsible Tree", "Linear Dendrogram",
-            "Radial Dendrogram", "Network Graph", "Circular Packing"])
+            "Radial Dendrogram", "Network Graph"])
     if sel == "Collapsible Tree":
         filename = animated.makeCollapsibleTree(df)
     elif sel == "Linear Dendrogram":
@@ -92,8 +94,6 @@ with tabAnim:
         filename = animated.makeRadialDendrogram(df)
     elif sel == "Network Graph":
         filename = animated.makeNetworkGraph(df)
-    elif sel == "Circular Packing":
-        filename = animated.makeCircularPacking(df)
 
     with open(filename, 'r', encoding='utf-8') as f:
         components.html(f.read(), height=2200, width=1000)

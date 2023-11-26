@@ -1,23 +1,19 @@
 import json
-import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
-import formats, graphs, charts, animated
+import pandas as pd
+import graphs, formats, charts, animated
 
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")
 st.caption("Display your hierarchical data with charts and graphs.")
 
-# load default CSV file
-filename = "data/employee-manager.csv"
-df = pd.read_csv(filename).convert_dtypes()
-
-# create tab control
 tabSource, tabFormat, tabGraph, tabChart, tabAnim = st.tabs(
     ["Source", "Format", "Graph", "Chart", "Animated"])
 
-# show source as data frame
 with tabSource:
+    filename = "data/employee-manager.csv"
+    df = pd.read_csv(filename).convert_dtypes()
     st.dataframe(df, use_container_width=True)
 
 # show in another data format
@@ -37,7 +33,6 @@ with tabFormat:
         yaml = formats.getYaml(root)
         st.code(yaml, language="yaml", line_numbers=True)
 
-# show as GraphViz graph
 with tabGraph:
     graph = graphs.getEdges(df)
     url = graphs.getUrl(graph)
