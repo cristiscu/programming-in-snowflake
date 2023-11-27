@@ -1,5 +1,5 @@
 streamlit
-snowflake-snowpark-python
+snowflake-snowpark-python[pandas]
 networkx
 pyvis
 plotly

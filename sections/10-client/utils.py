@@ -3,6 +3,9 @@ import pandas as pd
 import streamlit as st
 import snowflake.connector
 
+def getFullPath(filename):
+    return f"{os.path.dirname(__file__)}/{filename}"
+
 # customize with your own Snowflake connection parameters
 @st.cache_resource(show_spinner="Connecting to Snowflake...")
 def getConnection():
@@ -20,11 +23,13 @@ def getConnection():
 @st.cache_data(show_spinner="Running a Snowflake query...")
 def getDataFrame(query):
     try:
-        cur = getConnection().cursor()
-        cur.execute(query)
-        rows = cur.fetch_pandas_all()
-        return pd.DataFrame(rows)
+        conn = getConnection()
+        if not query.lower().startswith("select "):
+            return pd.read_sql(query, conn)
+        else:
+            cur = conn.cursor()
+            cur.execute(query)
+            return cur.fetch_pandas_all()
     except Exception as e:
-        st.error(e);
+        st.error(e)
         return None
-

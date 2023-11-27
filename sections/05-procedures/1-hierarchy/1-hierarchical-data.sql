@@ -18,3 +18,12 @@ create view employee_manager (employee, manager) as
   from emp e left join emp m on e.mgr = m.empno
   order by e.ename);
 
+-- company --> departments --> employees hierarchy
+create view employee_department (child, parent) as
+  select '(company)', null
+  union
+  select dname as child, '(company)' as parent
+  from dept
+  union
+  select e.ename, d.dname
+  from emp e left join dept d on e.deptno = d.deptno;

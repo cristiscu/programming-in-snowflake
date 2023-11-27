@@ -17,6 +17,7 @@ with tabSource:
     defTableName = "employees"
     tableName = st.text_input("Enter full name of a table or view:", value=defTableName)
     st.button("Refresh")
+    
     query = f"select * from {tableName}"
     df = connect.getDataFrame(query)
     if df is None: st.stop()
