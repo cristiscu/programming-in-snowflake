@@ -1,3 +1,0 @@
-# Client Programming with Snowflake
-
-...
