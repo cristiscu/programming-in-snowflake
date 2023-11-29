@@ -1,3 +1,0 @@
-# Hierarchical Metadata Viewer
-
-...

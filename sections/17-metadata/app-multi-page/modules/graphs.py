@@ -98,7 +98,7 @@ def getAllTasks(rows, skipDatabase=False, skipSchema=False):
             edges += f'\t"{parent}" -> "{name}";\n'
 
     graph = ('digraph {\n'
-        + '\tgraph [rankdir="TB"]\n'
+        + '\tgraph [rankdir="LR"]\n'
         + '\tnode [shape="rect"]\n\n'
         + f'{edges}'
         + '}')

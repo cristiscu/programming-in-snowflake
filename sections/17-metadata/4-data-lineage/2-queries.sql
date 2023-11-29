@@ -8,14 +8,18 @@ from snowflake.account_usage.access_history ah
    left join snowflake.account_usage.query_history qh
    on ah.query_id = qh.query_id,
    lateral flatten(input => objects_modified) om,
-   lateral flatten(input => om.value: "columns", outer => true) col,
+   lateral flatten(input => om.value:"columns", outer => true) col,
    lateral flatten(input => col.value:directSources, outer => true) src
 where ifnull(src.value:objectName::string, '') like 'LINEAGE_DB%'
    or ifnull(om.value:objectName::string, '') like 'LINEAGE_DB%'
 order by ah.query_start_time;
 
 
-create or replace function get_data_lineage(sch varchar)
+-- create new database
+create database if not exists data_deps;
+use schema data_deps.public;
+
+create or replace function get_lineage(sch varchar)
    returns table(source varchar, target varchar)
 as $$
    select distinct
@@ -29,4 +33,5 @@ as $$
       or objects_modified.value:objectName like sch || '%'
 $$;
 
-select * from table(get_data_lineage('LINEAGE_DB.TEST_SCHEMA'));
+select * from table(get_lineage('LINEAGE_DB.TEST_SCHEMA'));
+select * from table(get_lineage('EMPLOYEES.PUBLIC'));

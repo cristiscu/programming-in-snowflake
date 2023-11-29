@@ -1,17 +1,43 @@
+import os, configparser
 import streamlit as st
-import utils
+from snowflake.snowpark import Session
+from snowflake.snowpark.context import get_active_session
+
+# Get either online Snowflake session, or local session (on error)
+@st.cache_resource(show_spinner="Connecting to Snowflake...")
+def getSession():
+    try:
+        return get_active_session()
+    except:
+        # customize with your own local connection parameters
+        parser = configparser.ConfigParser()
+        parser.read(os.path.join(os.path.expanduser('~'), ".snowsql/config"))
+        section = "connections.demo_conn"
+        pars = {
+            "account": parser.get(section, "accountname"),
+            "user": parser.get(section, "username"),
+            "password": os.environ['SNOWSQL_PWD']
+        }
+        return Session.builder.configs(pars).create()
+
+@st.cache_data(show_spinner="Running a Snowflake query...")
+def runQuery(query):
+    try: return getSession().sql(query).collect()
+    except Exception as e: st.error(e); return None
+
+# =================================================================
 
 @st.cache_data(show_spinner="Getting all database names...")
 def getDatabases():
     query = "show databases"
-    rows = utils.runQuery(query)
+    rows = runQuery(query)
     if rows is None: st.stop()
     return [str(row["name"]) for row in rows]
 
 @st.cache_data(show_spinner="Getting database schema names...")
 def getSchemas(database):
     query = f'show schemas in database "{database}"'
-    rows = utils.runQuery(query)
+    rows = runQuery(query)
     if rows is None: st.stop()
     return [str(row["name"]) for row in rows]
 
@@ -31,7 +57,7 @@ def getDatabaseAndSchema():
 # Table Constraints
 def getFKDeps(database, schema):
     query = f'show imported keys in schema "{database}"."{schema}"'
-    return query, utils.runQuery(query)
+    return query, runQuery(query)
 
 # Data Lineage
 def getDataLineage(database, schema):
@@ -59,7 +85,7 @@ from snowflake.account_usage.access_history,
 where directSources.value:objectName like '{search}%'
   or objects_modified.value:objectName like '{search}%'
 """
-    return query, utils.runQuery(query)
+    return query, runQuery(query)
 
 # Object Dependencies
 def getObjDeps(database, schema):
@@ -70,7 +96,7 @@ def getObjDeps(database, schema):
         if schema is not None:
             query += (f"\n  and referenced_schema = '{schema}'"
                 + f"\n  and referencing_schema = '{schema}'")
-    return query, utils.runQuery(query)
+    return query, runQuery(query)
 
 # Task Graph
 def getTasks(database, schema):
@@ -78,32 +104,32 @@ def getTasks(database, schema):
     if database is None: query = f'show tasks'
     elif schema is None: query = f'show tasks in database "{database}"'
     else: query = f'show tasks in schema "{database}"."{schema}"'
-    return query, utils.runQuery(query)
+    return query, runQuery(query)
 
 @st.cache_data(show_spinner="Reading users and roles...")
 def getUsersAndRoles():
 
     # users
     users = {}
-    rows = utils.runQuery("show users")
+    rows = runQuery("show users")
     for row in rows:
         users[str(row["name"])] = []
 
     # roles
     roles = {}
-    rows = utils.runQuery("show roles")
+    rows = runQuery("show roles")
     for row in rows:
         roles[str(row["name"])] = []
 
     # user roles
     for user in users:
-        rows = utils.runQuery(f'show grants to user "{user}"')
+        rows = runQuery(f'show grants to user "{user}"')
         for row in rows:
             users[user].append(str(row["role"]))
 
     # role hierarchy
     for role in roles:
-        rows = utils.runQuery(f'show grants to role "{role}"')
+        rows = runQuery(f'show grants to role "{role}"')
         for row in rows:
             if (str(row["privilege"]) == "USAGE"
                 and str(row["granted_on"]) == "ROLE"):
