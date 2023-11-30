@@ -1,6 +1,6 @@
 -- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+create database if not exists snowpark;
+use schema snowpark.public;
 
 -- Python stored procedure
 -- https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-python
@@ -13,7 +13,8 @@ create or replace procedure procPythonS(num float)
 as $$
 import snowflake.snowpark as snowpark
 def proc1(session: snowpark.Session, num: float):
-  return '+' + str(num)
+  query = f"select '+' || to_char({num})"
+  return session.sql(query).collect()[0][0]
 $$;
 
 call procPythonS(22.5);
@@ -24,11 +25,11 @@ create or replace function fctPythonS(num float)
   returns string
   language python
   runtime_version = '3.8'
-  packages = ('snowflake-snowpark-python')
+  -- packages = ('snowflake-snowpark-python')
   handler = 'proc1'
 as $$
-import snowflake.snowpark as snowpark
-def proc1(num: float): -- no session here!
+# import snowflake.snowpark as snowpark
+def proc1(num: float):
   return '+' + str(num)
 $$;
 

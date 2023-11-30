@@ -1,6 +1,6 @@
 -- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+create database if not exists snowpark;
+use schema snowpark.public;
 
 -- Scala stored procedure
 -- https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-scala
@@ -13,8 +13,9 @@ create or replace procedure procScalaS(num float)
 as $$
   import com.snowflake.snowpark.Session;
   object MyClass {
-    def proc1(sess: Session, num: Float): String = {
-      return "+" + num.toString
+    def proc1(session: Session, num: Float): String = {
+      var query = "select '+' || to_char(" + num + ")"
+      return session.sql(query).collect()(0).getString(0)
   }}
 $$;
 
@@ -29,7 +30,7 @@ create or replace function fctScalaS(num float)
   packages = ('com.snowflake:snowpark:latest')
   handler = 'MyClass.fct1'
 as $$
-  import com.snowflake.snowpark.Session;
+  // import com.snowflake.snowpark.Session;
   object MyClass {
     def fct1(num: Float): String = {
       return "+" + num.toString

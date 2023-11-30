@@ -1,19 +1,15 @@
 # see https://medium.com/snowflake/how-to-create-a-complex-query-with-snowpark-dataframe-in-python-2d31b9e0961b
 
-import configparser, os
 from snowflake.snowpark import Session
+import os
 
-# create connection
-parser = configparser.ConfigParser()
-parser.read(os.path.join(os.path.expanduser('~'), ".snowsql/config"))
-section = "connections.demo_conn"
+# connect to Snowflake with Snowpark
 pars = {
-    "account": parser.get(section, "accountname"),
-    "user": parser.get(section, "username"),
-    "password": os.environ['SNOWSQL_PWD'],
-    "database": 'EMPLOYEES',
-    "schema": 'PUBLIC'
-}
+    "account": "XLB86271",
+    "user": "cscutaru",
+    "password": os.environ["SNOWSQL_PWD"],
+    "database": "EMPLOYEES",
+    "schema": "PUBLIC" }
 session = Session.builder.configs(pars).create()
 
 """
@@ -23,7 +19,7 @@ select dname, sum(sal)
   group by dname
   order by dname;
 """
-emps = (session.table("EMP").select("EMPNO", "DEPTNO", "SAL"))
+emps = (session.table("EMP").select("DEPTNO", "SAL"))
 depts = (session.table("DEPT").select("DEPTNO", "DNAME"))
 q = emps.join(depts, emps.deptno == depts.deptno)
 

@@ -1,6 +1,6 @@
 -- select test database and schema
-create database if not exists functions;
-use schema functions.public;
+create database if not exists snowpark;
+use schema snowpark.public;
 
 -- Java stored procedure
 -- https://docs.snowflake.com/en/developer-guide/stored-procedure/stored-procedures-java
@@ -14,7 +14,8 @@ as $$
   import com.snowflake.snowpark_java.*;
   class MyClass {
     public String proc1(Session session, float num) {
-      return "+" + Float.toString(num);
+      String query = "select '+' || to_char(" + num + ")";
+      return session.sql(query).collect()[0].getString(0);
   }}
 $$;
 
@@ -26,10 +27,10 @@ create or replace function fctJavaS(num float)
   returns string
   language java
   runtime_version = 11
-  packages = ('com.snowflake:snowpark:latest')
+  -- packages = ('com.snowflake:snowpark:latest')
   handler = 'MyClass.fct1'
 as $$
-  import com.snowflake.snowpark_java.*;
+  // import com.snowflake.snowpark_java.*;
   class MyClass {
     public String fct1(float num) {
       return "+" + Float.toString(num);
@@ -44,10 +45,10 @@ create or replace function fcttJavaS(s string)
   returns table(out varchar)
   language java
   runtime_version = 11
-  packages = ('com.snowflake:snowpark:latest')
+  -- packages = ('com.snowflake:snowpark:latest')
   handler = 'MyClass'
 as $$
-  import com.snowflake.snowpark_java.*;
+  // import com.snowflake.snowpark_java.*;
   import java.util.stream.Stream;
   class OutputRow {
     public String out;
