@@ -1,3 +1,4 @@
+-- snowsql -c demo_conn -f 2-create-multi-tenant.sql -D tenant=HP -D env=PROD
 -- have variable substitution ON
 !SET VARIABLE_SUBSTITUTION=true;
 
