@@ -1,11 +1,12 @@
-import os, snowflake.connector
+import os
+import snowflake.connector
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import serialization
 
 def get_private_key(asPEM=False):
 
     # read the private key from file (replace with your own path)
-    p_file = "C:/Users/crist/.ssh/id_rsa_demo"
+    p_file = os.path.join(os.path.expanduser('~'), ".ssh/id_rsa_demo")
     with open(p_file, "rb") as fkey:
         # decrypt with passphrase (set before as env var)
         passphrase = os.environ['SNOWSQL_PRIVATE_KEY_PASSPHRASE'].encode()
@@ -24,11 +25,11 @@ def get_private_key(asPEM=False):
 
 
 # customize with your own user name and account locator
-current_user = "cristiscu"
+current_user = "cscutaru"
 _, p_key_raw = get_private_key()
 ctx = snowflake.connector.connect(
     user=current_user,
-    account="BTB76003",
+    account="XLB86271",
     role="ACCOUNTADMIN",
     private_key=p_key_raw)
 
