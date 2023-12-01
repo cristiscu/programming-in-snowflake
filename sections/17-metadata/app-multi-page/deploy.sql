@@ -10,7 +10,6 @@ CREATE STAGE stage
     file_format = (type=CSV field_delimiter=None record_delimiter=None);
 
 -- transfer files
-PUT &CRT_DIR\README.md @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\*.py @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
 PUT &CRT_DIR\pages\*.py @stage/pages overwrite=true auto_compress=false;

@@ -50,7 +50,6 @@ CREATE TABLE audit_queries (start_ts timestamp, query varchar);
 PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
 PUT &CRT_DIR\app.py @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\environment.yml @stage overwrite=true auto_compress=false;
-PUT &CRT_DIR\README.md @stage overwrite=true auto_compress=false;
 
 CREATE STREAMLIT hierarchy_data_viewer
     ROOT_LOCATION = '@hierarchy_data_viewer.public.stage'
