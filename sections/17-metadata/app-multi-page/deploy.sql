@@ -2,8 +2,8 @@
 !set variable_substitution=true
 !define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\17-metadata\app-multi-page
 
-CREATE OR REPLACE DATABASE hierarchy_metadata_viewer;
--- cleanup all with: DROP DATABASE IF EXISTS hierarchy_metadata_viewer;
+CREATE OR REPLACE DATABASE hierarchical_metadata_viewer;
+-- cleanup all with: DROP DATABASE IF EXISTS hierarchical_metadata_viewer;
 
 CREATE STAGE stage
     directory = (enable=true)
@@ -15,8 +15,8 @@ PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
 PUT &CRT_DIR\pages\*.py @stage/pages overwrite=true auto_compress=false;
 
 -- create STREAMLIT app
-CREATE STREAMLIT hierarchy_metadata_viewer
-    ROOT_LOCATION = '@hierarchy_metadata_viewer.public.stage'
+CREATE STREAMLIT hierarchical_metadata_viewer
+    ROOT_LOCATION = '@hierarchical_metadata_viewer.public.stage'
     MAIN_FILE = '/Main.py'
     QUERY_WAREHOUSE = "COMPUTE_WH";
 SHOW STREAMLITS;

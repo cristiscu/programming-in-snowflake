@@ -2,8 +2,8 @@
 !set variable_substitution=true
 !define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\12-streamlit-in-snowflake\app
 
-CREATE OR REPLACE DATABASE hierarchy_data_viewer;
--- cleanup all with: DROP DATABASE IF EXISTS hierarchy_data_viewer;
+CREATE OR REPLACE DATABASE hierarchical_data_viewer;
+-- cleanup all with: DROP DATABASE IF EXISTS hierarchical_data_viewer;
 
 CREATE STAGE stage
     directory = (enable=true)
@@ -37,11 +37,11 @@ $$;
 
 -- create and configure event table
 CREATE OR REPLACE EVENT TABLE myevents;
-ALTER ACCOUNT SET EVENT_TABLE = hierarchy_data_viewer.public.myevents;
+ALTER ACCOUNT SET EVENT_TABLE = hierarchical_data_viewer.public.myevents;
 SHOW PARAMETERS LIKE 'event_table' IN ACCOUNT;
 
-ALTER DATABASE hierarchy_data_viewer SET LOG_LEVEL = INFO;
-ALTER DATABASE hierarchy_data_viewer SET TRACE_LEVEL = ALWAYS;
+ALTER DATABASE hierarchical_data_viewer SET LOG_LEVEL = INFO;
+ALTER DATABASE hierarchical_data_viewer SET TRACE_LEVEL = ALWAYS;
 
 CREATE TABLE audit_users (start_ts timestamp, user varchar);
 CREATE TABLE audit_queries (start_ts timestamp, query varchar);
@@ -51,8 +51,8 @@ PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
 PUT &CRT_DIR\app.py @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\environment.yml @stage overwrite=true auto_compress=false;
 
-CREATE STREAMLIT hierarchy_data_viewer
-    ROOT_LOCATION = '@hierarchy_data_viewer.public.stage'
+CREATE STREAMLIT hierarchical_data_viewer
+    ROOT_LOCATION = '@hierarchical_data_viewer.public.stage'
     MAIN_FILE = '/app.py'
     QUERY_WAREHOUSE = "COMPUTE_WH";
 SHOW STREAMLITS;
