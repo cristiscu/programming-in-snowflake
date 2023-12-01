@@ -1,6 +1,0 @@
-{
-    "warehouse": "COMPUTE_WH",
-    "role": "ACCOUNTADMIN",
-    "statement": "show parameters",
-    "timeout": 60
-}

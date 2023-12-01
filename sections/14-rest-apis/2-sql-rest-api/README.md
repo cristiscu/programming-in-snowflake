@@ -1,25 +1,10 @@
 # Snowflake SQL REST API
 
-Here are the steps to issue a **SHOW PARAMETERS** SQL statement for the current user through a HTTP request to the Snowflake SQL REST API. We assume you already configured the required key pair authentication to Snowflake. We'll generate here a new JWT token with SnowSQL, and we'll pass it to the CURL command. The CURL command will issue a POST request, with additional configuration data from a **request-body.json** local file. When successful, the command returns a HTTP 200 OK code, followed by JSON results. Look for the "data" object array for the requested data.
+Here are the steps to issue a **SELECT CURRENT_ROLE()** SQL statement through a HTTP request to the Snowflake SQL REST API. We assume you already configured the required key pair authentication to Snowflake. We'll generate here a new JWT token with SnowSQL, and we'll pass it to the CURL command. The CURL command will issue a POST request. When successful, the command returns a HTTP 200 OK code, followed by JSON results. Look for the "data" object array for the requested data.
 
-1. Configure **key pair authentication** to Snowflake, as described before.
+1. Configure **key pair authentication** to Snowflake, as described before. Then generate a **JWT token** with SnowSQL. Save it into a PowerShell variable.
 
-2. Generate a **JWT token** with SnowSQL, as described before. Example: **`snowsql --generate-jwt --private-key-path "C:/Users/crist/.ssh/id_rsa_demo" -a BTB76003 -u cristiscu`**. This will output something like:
-```
-eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJCVEI3NjAwMy5DUklTVElTQ1UuU0hBMjU2OjVIYmtsbHRtaGNFNTVObmFFZnJQSmN3eUtJOFlEQWdFRVNMTFdXNHkzbWc9Iiwic3ViIjoiQlRCNzYwMDMuQ1JJU1RJU0NVIiwiaWF0IjoxNjk5MzAxMzk5LCJleHAiOjE2OTkzODc3OTl9.dm0DX7EOzoWCLuZWjhsbfWSO66Qqvg-2FItbctACfRDjBMYrqtQgDGvz0gku4opviHudUBApLtcFkVIxosFrzHRbsGIM6Xv9cKVImQK40CodGViR3L1CrWWXYp_s572JCyd1kqMVbmEI_8xa4TtKWuE41pH44Ea7mXAOPeAoHsJXZpbodFFitUe7ozeKav9eaI4x94hw9NlRX-UJQTLQbk29tf9yoMJ1Pw6klK9wufsvI-0MgMGwNIeJ8pWLwvfVOETNBAeljeDcWlwPX7XwRdXx6Vb9hh3rbsbAXuy_oNew8h0r8U7WysxmVBvKaAdFzbhFEHlRnqSqwbwtJGkE2A
-```
-
-3. Create a **request-body.json** file with other connection parameters and your SQL statement:
-```
-{
-    "warehouse": "COMPUTE_WH",
-    "role": "ACCOUNTADMIN",
-    "statement": "show parameters",
-    "timeout": 60
-}
-```
-
-4. From the same folder, send the POST request with **curl**, from the command line (in Windows here). Before running the command, replace **<jwt>** with the token previously generated:
+2. Send a POST request with **curl**, from the command line (in Windows here). Before running the command, replace **<jwt>** with the JWT token previously generated:
 ```
 curl -i -X POST `
     -H "Content-Type: application/json" `
@@ -27,11 +12,11 @@ curl -i -X POST `
     -H "Accept: application/json" `
     -H "User-Agent: myApplicationName/1.0" `
     -H "X-Snowflake-Authorization-Token-Type: KEYPAIR_JWT" `
-    -d "@request-body.json" `
-    "https://BTB76003.snowflakecomputing.com/api/v2/statements"
+    -d '{ "statement": "select current_role()" }' `
+    "https://XLB86271.snowflakecomputing.com/api/v2/statements"
 ```
 
-5. Check the JSON response, which should contain all data if run successfully (in the "data" JSON array), something like:
+3. Check the JSON response, which should contain all data if run successfully (in the "data" JSON array), something like:
 
 ```
 HTTP/1.1 200 OK
@@ -139,33 +124,7 @@ Connection: keep-alive
       }
     ]
   },
-  "data": [
-    [
-      "ABORT_DETACHED_QUERY",
-      "false",
-      "false",
-      "",
-      "If true, Snowflake will automatically abort queries when it detects that the client has disappeared.",
-      "BOOLEAN"
-    ],
-    ...
-    [
-      "WEEK_OF_YEAR_POLICY",
-      "0",
-      "0",
-      "",
-      "Defines the policy of assigning weeks to years:\n0: the week needs to have 4 days in a given year;\n1: a week with January 1st always belongs to a given year.",
-      "NUMBER"
-    ],
-    [
-      "WEEK_START",
-      "0",
-      "0",
-      "",
-      "Defines the first day of the week:\n0: legacy Snowflake behavior; 1: Monday .. 7: Sunday.",
-      "NUMBER"
-    ]
-  ],
+  "data" : [ ["ACCOUNTADMIN"] ],
   "code": "090001",
   "statementStatusUrl": "/api/v2/statements/01b027a0-0001-db84-003d-b087000b8daa?requestId=4ccb7432-c62b-4197-9ac3-915fe56547c8",
   "requestId": "4ccb7432-c62b-4197-9ac3-915fe56547c8",
