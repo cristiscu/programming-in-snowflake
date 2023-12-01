@@ -2,7 +2,10 @@ import json
 import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
-import graphs, formats, charts, animated
+import modules.graphs as graphs
+import modules.formats as formats
+import modules.charts as charts
+import modules.animated as animated
 
 st.set_page_config(layout="wide")
 st.title("Hierarchical Data Viewer")

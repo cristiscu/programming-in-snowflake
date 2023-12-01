@@ -23,8 +23,8 @@ def getSession():
 @st.cache_data(show_spinner="Running a Snowflake query...")
 def getDataFrame(query):
     try:
-        df = getSession().sql(query)
-        rows = df.collect()
+        conn = getSession()
+        rows = conn.sql(query).collect()
         return pd.DataFrame(rows).convert_dtypes()
     except Exception as e:
         st.error(e);

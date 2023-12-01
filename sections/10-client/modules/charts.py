@@ -1,6 +1,5 @@
-# after "pip install plotly"
-import plotly.graph_objects as go
 import pandas as pd
+import plotly.graph_objects as go
 
 # see https://plotly.com/python/treemaps/
 def makeTreemap(labels, parents):
@@ -11,6 +10,7 @@ def makeTreemap(labels, parents):
         parents=parents,
         root_color="lightgrey")
     fig = go.Figure(data)
+    #fig.write_html(utils.getFullPath('charts/treemap.html'))
     return fig
 
 # see https://plotly.com/python/icicle-charts/
@@ -22,6 +22,7 @@ def makeIcicle(labels, parents):
         parents=parents,
         root_color="lightgrey")
     fig = go.Figure(data)
+    #fig.write_html(utils.getFullPath('charts/icicle.html'))
     return fig
 
 # see https://plotly.com/python/sunburst-charts/
@@ -33,6 +34,7 @@ def makeSunburst(labels, parents):
         parents=parents,
         insidetextorientation='horizontal')
     fig = go.Figure(data)
+    #fig.write_html(utils.getFullPath('charts/sunburst.html'))
     return fig
 
 # see https://plotly.com/python/sankey-diagram/
@@ -46,4 +48,5 @@ def makeSankey(labels, parents):
             label=labels,
             value=list(range(1, len(labels)))))
     fig = go.Figure(data)
+    #fig.write_html(utils.getFullPath('charts/sankey.html'))
     return fig

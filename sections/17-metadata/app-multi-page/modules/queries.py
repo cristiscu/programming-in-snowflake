@@ -44,11 +44,11 @@ def getSchemas(database):
 # select a database and schema
 def getDatabaseAndSchema():
     databases = getDatabases()
-    database = st.sidebar.selectbox('Database', databases, index=None)
+    database = st.sidebar.selectbox('Database', databases, index=0)
     if database is None: return None, None
 
     schemas = getSchemas(database)
-    sel = None if "PUBLIC" not in schemas else schemas.index("PUBLIC")
+    sel = 0 if "PUBLIC" not in schemas else schemas.index("PUBLIC")
     schema = st.sidebar.selectbox('Schema', schemas, index=sel)
     return database, schema
 
@@ -112,14 +112,16 @@ def getUsersAndRoles():
     # users
     users = {}
     rows = runQuery("show users")
-    for row in rows:
-        users[str(row["name"])] = []
+    if rows is not None:
+        for row in rows:
+            users[str(row["name"])] = []
 
     # roles
     roles = {}
     rows = runQuery("show roles")
-    for row in rows:
-        roles[str(row["name"])] = []
+    if rows is not None:
+        for row in rows:
+            roles[str(row["name"])] = []
 
     # user roles
     for user in users:

@@ -1,3 +1,0 @@
-# Snowflake Query Optimization
-
-...

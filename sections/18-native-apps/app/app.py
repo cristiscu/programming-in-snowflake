@@ -1,10 +1,12 @@
 import json
 import streamlit as st
-import hierarchical, graphs, connect
+import modules.graphs as graphs
+import modules.formats as formats
+import modules.utils as utils
 
 # setup page and create tabs
 st.set_page_config(layout="wide")
-st.title("Hierarchical Data App")
+st.title("Hierarchical Data Viewer")
 st.caption("Display your parent-child data pairs in a better manner.")
 
 tabSource, tabHierarchy, tabFormat, tabGraph = st.tabs(
@@ -12,47 +14,50 @@ tabSource, tabHierarchy, tabFormat, tabGraph = st.tabs(
 
 # show source as data frame
 with tabSource:
-
-    # from hierarchical_data_app.code schema
     defTableName = "employees"
     tableName = st.text_input("Enter full name of a table or view:", value=defTableName)
     st.button("Refresh")
-    
+
     query = f"select * from {tableName}"
-    df = connect.getDataFrame(query)
-    if df is None: st.stop()
-    st.dataframe(df, use_container_width=True)
+    df_orig = utils.getDataFrame(query)
+    if df_orig is None: st.stop()
+    st.dataframe(df_orig, use_container_width=True)
+    cols = list(df_orig.columns)
 
-# show hierarchy as returned by the Snowflake query
+    child = st.sidebar.selectbox("Child Column Name", cols, index=0)
+    parent = st.sidebar.selectbox("Parent Column Name", cols, index=1)
+    df = df_orig[[child, parent]]
+
+# show name and path as returned by the Snowflake query
 with tabHierarchy:
-
-    # from hierarchical_data_app.code schema
-    st.write("Generated query:")
-    query = f"select get_tree_query('{tableName}')"
-    query = str(connect.getRows(query)[0][0])
-    st.code(query)
-    
-    st.write("Returned hierarchy:")
     query = f"call get_tree('{tableName}')"
-    df2 = connect.getDataFrame(query)
-    if df2 is None: st.stop()
-    st.dataframe(df2, use_container_width=True)
+    df_path = utils.getDataFrame(query)
+    if df_path is None: st.stop()
+    st.dataframe(df_path, use_container_width=True)
 
 # show in another data format
 with tabFormat:
+    sel = st.selectbox(
+        "Select a data format:",
+        options=["JSON", "XML", "YAML", "JSON Path"])
 
-    root = hierarchical.getJson(df, 0, 1)
-    sel = st.selectbox("Select a data format:", options=["JSON", "XML", "YAML"])
+    root = formats.getJson(df)
     if sel == "JSON":
-        st.code(json.dumps(root, indent=3), language="json", line_numbers=True)
+        jsn = json.dumps(root, indent=2)
+        st.code(jsn, language="json", line_numbers=True)
     elif sel == "XML":
-        xml = f'<?xml version="1.0" encoding="utf-8"?>\n{hierarchical.getXml(root)}'
+        xml = formats.getXml(root)
         st.code(xml, language="xml", line_numbers=True)
     elif sel == "YAML":
-        st.code(hierarchical.getYaml(root), language="yaml", line_numbers=True)
+        yaml = formats.getYaml(root)
+        st.code(yaml, language="yaml", line_numbers=True)
+    elif sel == "JSON Path":
+        jsn = json.dumps(formats.getPath(root, []), indent=2)
+        st.code(jsn, language="json", line_numbers=True)
 
 # show as GraphViz graph
 with tabGraph:
-
-    graph = graphs.getEdges(df, 0, 1)
+    graph = graphs.getEdges(df)
+    #try: st.link_button("Visualize Online", graphs.getUrl(graph))
+    #except: pass
     st.graphviz_chart(graph)

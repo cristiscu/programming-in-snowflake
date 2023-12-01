@@ -8,8 +8,8 @@
 
 ## 2. Deploy and test as a local Snowflake native app in your own account
 
-* Replace the *CRT_DIR* variable value in *scripts/deploy.sql* with your local path to these files.
-* From the app/ folder, call **`snowsql -c my_conn -f scripts/deploy.sql`**. Make sure there are no red lines on screen.
+* Replace the *CRT_DIR* variable value in *deploy.sql* with your local path to these files.
+* From the app/ folder, call **`snowsql -c my_conn -f deploy.sql`**. Make sure there are no red lines on screen.
 * Start the app from Snowflake, from under the *Apps* folder. HIERARCHICAL_DATA_APP will show you the ReamMe file. Click on HIERARCHICAL_DATA_CODE to start the app.
 
 ## 3. Deploy as a private listing consumed by other accounts in your organization

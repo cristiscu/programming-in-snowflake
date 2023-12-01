@@ -1,10 +1,13 @@
 import json
 import streamlit as st
-import m2_hierarchical, m3_graphs, m4_charts, m6_connect
+import modules.graphs as graphs
+import modules.formats as formats
+import modules.charts as charts
+import modules.utils as utils
 
 # log messages (logger) + trace events (telemetry)
-import logger
-from snowflake import telemetry
+import logging
+#from snowflake import telemetry
 
 # setup page and create tabs
 st.set_page_config(layout="wide")
@@ -17,68 +20,67 @@ tabSource, tabHierarchy, tabFormat, tabGraph, tabChart = st.tabs(
 # show source as data frame
 with tabSource:
     defTableName = "hierarchy_data_viewer.public.employees"
-    #defTableName = "employees.public.employee_manager2"
-    tableName = st.text_input("Table or view full name:", value=defTableName)
+    tableName = st.text_input("Enter full name of a table or view:", value=defTableName)
     st.button("Refresh")
+
     query = f"select * from {tableName}"
-    df = m6_connect.getDataFrame(query)
-    if df is None: st.stop()
-    st.dataframe(df, use_container_width=True)
+    df_orig = utils.getDataFrame(query)
+    if df_orig is None: st.stop()
+    st.dataframe(df_orig, use_container_width=True)
+    cols = list(df_orig.columns)
 
-# show hierarchy as returned by the Snowflake query
+    child = st.sidebar.selectbox("Child Column Name", cols, index=0)
+    parent = st.sidebar.selectbox("Parent Column Name", cols, index=1)
+    df = df_orig[[child, parent]]
+
+# show name and path as returned by the Snowflake query
 with tabHierarchy:
-    query = f"""with recursive cte (level, name, child, parent, path) as (
-  select 1, $1, $1, $2, ' -> ' || $1
-  from {tableName} where $2 is null
-  union all
-  select m.level + 1, repeat('  ', level) || e.$1,
-    e.$1, e.$2, path || ' -> ' || e.$1
-  from {tableName} e join cte m on e.$2 = m.child)
-select name, path from cte order by path;
-"""
-    df2 = m6_connect.getDataFrame(query)
-    if df2 is None: st.stop()
-    st.dataframe(df2, use_container_width=True)
-
-# the rest is like before!
-# =============================================================
-
-idx_label, idx_parent = 0, 1
-labels = df[df.columns[idx_label]]
-parents = df[df.columns[idx_parent]]
+    query = f"call hierarchy_data_viewer.public.show_tree('{tableName}')"
+    df_path = utils.getDataFrame(query)
+    if df_path is None: st.stop()
+    st.dataframe(df_path, use_container_width=True)
 
 # show in another data format
 with tabFormat:
     sel = st.selectbox(
         "Select a data format:",
-        options=["JSON", "XML", "YAML"])
+        options=["JSON", "XML", "YAML", "JSON Path"])
 
-    root = m2_hierarchical.getJson(df, idx_label, idx_parent)
+    root = formats.getJson(df)
     if sel == "JSON":
-        st.code(json.dumps(root, indent=3), language="json", line_numbers=True)
+        jsn = json.dumps(root, indent=2)
+        st.code(jsn, language="json", line_numbers=True)
     elif sel == "XML":
-        xml = f'<?xml version="1.0" encoding="utf-8"?>\n{m2_hierarchical.getXml(root)}'
+        xml = formats.getXml(root)
         st.code(xml, language="xml", line_numbers=True)
     elif sel == "YAML":
-        st.code(m2_hierarchical.getYaml(root), language="yaml", line_numbers=True)
+        yaml = formats.getYaml(root)
+        st.code(yaml, language="yaml", line_numbers=True)
+    elif sel == "JSON Path":
+        jsn = json.dumps(formats.getPath(root, []), indent=2)
+        st.code(jsn, language="json", line_numbers=True)
 
 # show as GraphViz graph
 with tabGraph:
-    graph = m3_graphs.getEdges(df, idx_label, idx_parent)
+    graph = graphs.getEdges(df)
+    try: st.link_button("Visualize Online", graphs.getUrl(graph))
+    except: pass
     st.graphviz_chart(graph)
 
 # show as Plotly chart
 with tabChart:
+    labels = df[df.columns[0]]
+    parents = df[df.columns[1]]
+
     sel = st.selectbox(
         "Select a chart type:",
         options=["Treemap", "Icicle", "Sunburst", "Sankey"])
     if sel == "Treemap":
-        fig = m4_charts.makeTreemap(labels, parents)
+        fig = charts.makeTreemap(labels, parents)
     elif sel == "Icicle":
-        fig = m4_charts.makeIcicle(labels, parents)
+        fig = charts.makeIcicle(labels, parents)
     elif sel == "Sunburst":
-        fig = m4_charts.makeSunburst(labels, parents)
+        fig = charts.makeSunburst(labels, parents)
     elif sel == "Sankey":
-        fig = m4_charts.makeSankey(labels, parents)
+        fig = charts.makeSankey(labels, parents)
     st.plotly_chart(fig, use_container_width=True)
-

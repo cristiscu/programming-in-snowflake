@@ -1,4 +1,4 @@
--- run from app-multi-page folder with : snowsql -c demo_conn -f deploy.sql
+-- run from current folder with: snowsql -c demo_conn -f deploy.sql
 !set variable_substitution=true
 !define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\17-metadata\app-multi-page
 
@@ -10,12 +10,10 @@ CREATE STAGE stage
     file_format = (type=CSV field_delimiter=None record_delimiter=None);
 
 -- transfer files
-PUT &CRT_DIR\*.py @stage
-    overwrite=true auto_compress=false;
-PUT &CRT_DIR\modules\*.py @stage/modules
-    overwrite=true auto_compress=false;
-PUT &CRT_DIR\pages\*.py @stage/pages
-    overwrite=true auto_compress=false;
+PUT &CRT_DIR\README.md @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\*.py @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
+PUT &CRT_DIR\pages\*.py @stage/pages overwrite=true auto_compress=false;
 
 -- create STREAMLIT app
 CREATE STREAMLIT hierarchy_metadata_viewer

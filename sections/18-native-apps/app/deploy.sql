@@ -1,3 +1,4 @@
+-- run from current folder with: snowsql -c demo_conn -f deploy.sql
 !set variable_substitution=true
 !define CRT_DIR=file://C:\Projects\programming-in-snowflake\sections\18-native-apps\app
 
@@ -10,6 +11,7 @@ SHOW APPLICATION PACKAGES;
 USE APPLICATION PACKAGE hierarchical_data_package;
 DROP SCHEMA public;
 
+-- =============================================================
 -- create data to share through a view
 CREATE SCHEMA shared;
 GRANT USAGE ON SCHEMA shared TO SHARE
@@ -19,6 +21,7 @@ CREATE TABLE employees (EMPLOYEE VARCHAR, MANAGER VARCHAR);
 GRANT SELECT ON TABLE employees TO SHARE
    IN APPLICATION PACKAGE hierarchical_data_package;
 
+-- =============================================================
 CREATE SCHEMA native;
 
 CREATE STAGE stage
@@ -35,7 +38,8 @@ COPY INTO shared.employees FROM @stage/data
 PUT &CRT_DIR\manifest.yml @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\README.md @stage overwrite=true auto_compress=false;
 PUT &CRT_DIR\setup.sql @stage overwrite=true auto_compress=false;
-PUT &CRT_DIR\*.py @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\app.py @stage overwrite=true auto_compress=false;
+PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
 LIST @stage;
 
 -- set app version

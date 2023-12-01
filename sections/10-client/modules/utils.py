@@ -4,7 +4,10 @@ import streamlit as st
 import snowflake.connector
 
 def getFullPath(filename):
-    return f"{os.path.dirname(__file__)}/{filename}"
+    #return f"{os.path.dirname(__file__)}/{filename}"
+    crtdir = os.path.dirname(__file__)
+    pardir = os.path.abspath(os.path.join(crtdir, os.pardir))
+    return f"{pardir}/{filename}"
 
 # customize with your own Snowflake connection parameters
 @st.cache_resource(show_spinner="Connecting to Snowflake...")

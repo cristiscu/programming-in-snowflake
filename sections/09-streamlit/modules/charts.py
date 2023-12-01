@@ -1,6 +1,6 @@
 import pandas as pd
 import plotly.graph_objects as go
-import utils
+import modules.utils as utils
 
 # see https://plotly.com/python/treemaps/
 def makeTreemap(labels, parents):

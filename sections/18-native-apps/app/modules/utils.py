@@ -32,4 +32,5 @@ def getRows(query):
 
 def getDataFrame(query):
     rows = getRows(query)
-    return pd.DataFrame(rows).convert_dtypes() if rows is not None else None
+    if rows is None: return None
+    return pd.DataFrame(rows).convert_dtypes()

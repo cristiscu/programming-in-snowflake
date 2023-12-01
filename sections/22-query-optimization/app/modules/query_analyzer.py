@@ -1,4 +1,4 @@
-import utils
+import modules.utils as utils
 
 class QueryAnalyzer:
 

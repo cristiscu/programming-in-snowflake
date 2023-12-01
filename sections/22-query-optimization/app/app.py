@@ -1,10 +1,9 @@
 import urllib.parse
 import pandas as pd
 import streamlit as st
-
-import utils
-from query_profiler import QueryProfiler
-from query_analyzer import QueryAnalyzer
+import modules.utils as utils
+from modules.query_profiler import QueryProfiler
+from modules.query_analyzer import QueryAnalyzer
 
 st.set_page_config(layout="wide")
 st.title("Enhanced Query Profile")

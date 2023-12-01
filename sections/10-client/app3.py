@@ -1,7 +1,11 @@
 import json
 import streamlit as st
 import streamlit.components.v1 as components
-import formats, graphs, charts, animated, utils
+import modules.graphs as graphs
+import modules.formats as formats
+import modules.charts as charts
+import modules.animated as animated
+import modules.utils as utils
 
 # setup page and create tabs
 st.set_page_config(layout="wide")
