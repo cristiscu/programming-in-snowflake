@@ -78,7 +78,7 @@ SHOW TAGS IN ACCOUNT;
 
 -- not listed here (by def in crt database and schema!)
 -- see https://community.snowflake.com/s/article/No-TAGS-visible-in-ACCOUNT-USAGE-TAGS-after-using-the-stored-procedure-ASSOCIATE-SEMANTIC-CATEGORY-TAGS
-SHOW TAGS
+SHOW TAGS;
 
 -- EMAIL column shows both PRIVACY_CATEGORY and SEMANTIC_CATEGORY tags
 select * from table(

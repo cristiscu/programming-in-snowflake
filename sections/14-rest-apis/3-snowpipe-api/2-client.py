@@ -10,7 +10,7 @@ from snowflake.ingest import SimpleIngestManager, StagedFile
 def get_private_key(asPEM=False):
 
     # read the private key from file (replace with your own path)
-    p_file = "C:/Users/crist/.ssh/id_rsa_demo"
+    p_file = os.path.join(os.path.expanduser('~'), ".ssh/id_rsa_demo")
     with open(p_file, "rb") as fkey:
         # decrypt with passphrase (set before as env var)
         passphrase = os.environ['SNOWSQL_PRIVATE_KEY_PASSPHRASE'].encode()
@@ -60,9 +60,9 @@ logger = getLogger(__name__)
 
 _, p_key_raw = get_private_key(True)
 manager = SimpleIngestManager(
-    account="BTB76003",
-    host='BTB76003.snowflakecomputing.com',
-    user="cristiscu",
+    account="XLB86271",
+    host='XLB86271.snowflakecomputing.com',
+    user="cscutaru",
     pipe='EMPLOYEES.PUBLIC.MYPIPE',
     private_key=p_key_raw) # .decode('utf-8')
 
