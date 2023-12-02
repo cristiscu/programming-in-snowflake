@@ -3,7 +3,7 @@ use schema employees.public;
 -- window frame (--> moving average)
 select ename, hiredate, sal,
   round(avg(sal) over (order by hiredate
-    rows between 1 preceding and 1 following), 2) as avg
+    rows between 2 preceding and current row), 2) as avg
 from emp
 order by hiredate;
 
