@@ -1,18 +1,14 @@
--- select database and schema
+use schema employees.public;
 
 select dname, sum(sal)
-  from emp
-    join dept
-    on emp.deptno = dept.deptno
+  from emp join dept on emp.deptno = dept.deptno
   where dname <> 'RESEARCH'
   group by dname
   order by dname;
 
 explain
   select dname, sum(sal)
-  from emp
-    join dept
-    on emp.deptno = dept.deptno
+  from emp join dept on emp.deptno = dept.deptno
   where dname <> 'RESEARCH'
   group by dname
   order by dname;
@@ -20,9 +16,7 @@ explain
 select system$explain_plan_json(
 $$
 select dname, sum(sal)
-  from emp
-    join dept
-    on emp.deptno = dept.deptno
+  from emp join dept on emp.deptno = dept.deptno
   where dname <> 'RESEARCH'
   group by dname
   order by dname
