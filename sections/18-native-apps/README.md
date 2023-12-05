@@ -34,5 +34,5 @@
 * Grant our app read-only rights on this data with:
     **`GRANT USAGE on DATABASE db TO APPLICATION hierarchical_data_app;`**
     **`GRANT USAGE on SCHEMA db.schema TO APPLICATION hierarchical_data_app;`**
-    **`GRANT SELECT on VIEW db.schema.view TO APPLICATION hierarchical_data_app;`**
+    **`GRANT SELECT on VIEW db.schema.name TO APPLICATION hierarchical_data_app;`**
 * Restart the app, and replace the *employee* view name from our app with the full name of your view (*db.schema.view*). Click *Refresh* and you should see your own data!
