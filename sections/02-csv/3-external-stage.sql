@@ -1,8 +1,8 @@
 -- (1) create a dedicated S3 bucket with a data/ folder
--- (2) upload data/emp11.csv and data/emp12.csv files
--- (3) create a IAM access policy (in JSON, see below), w/ access to the S3 data/ folder
--- (4) attach the IAM policy to a new IAM user
--- (5) generate and copy access keys for the new IAM user
+-- (2) create a IAM access policy (in JSON, see below), w/ access to the S3 data/ folder
+-- (3) attach the IAM policy to a new IAM user
+-- (4) generate and copy access keys for the new IAM user
+-- (5) upload data/emp11.csv and data/emp12.csv files
 -- see https://docs.snowflake.com/en/user-guide/data-load-s3-config-aws-iam-user
 
 /*

@@ -1,11 +1,19 @@
--- assuming we already created a mystage_s3 external S3 stage
--- for the s3://snowflake-demo-8888/spool/ bucket folder
--- delete all previously loaded CSV files in the folder
-
 use schema employees.public;
+
+-- create an empty external S3 stage as described in the CSV section
+-- customize with your own bucket name and user access keys
+create or replace stage mystage_s3
+  url = 's3://your-bucket-name/data/'
+  credentials = (
+    aws_key_id='AKIA..........MPBFUM'
+    aws_secret_key='tuezr/yX/xbnq.........Or3c7dZzCmyA5PmHo');
+
+-- should be empty
+list @mystage_s3;
 
 create table emp_pipe like emp;
 
+-- PURGE not supported!
 create pipe mypipe
   auto_ingest = true
 as
@@ -13,7 +21,7 @@ as
     file_format = (type = 'CSV')
     on_error = 'CONTINUE';
 
--- copy the SQS ARN to paste in AWS S3 event configuration
+-- copy the SQS ARN (notification_channel column) and paste it in the AWS S3 event configuration
 -- ex: arn:aws:sqs:us-west-2:946158320428:sf-snowpipe-AIDA5YS3OHMWLDQF7M7ML-DXU1ig_rWZl_kGj1DUnL9Q
 show pipes;
 
@@ -37,4 +45,10 @@ select system$pipe_status('mypipe');
 }
 */
 
-  
+select * from emp_pipe;
+
+alter pipe mypipe
+  set pipe_execution_paused = true;
+
+-- cleanup AWS resources (S3 bucket, user, policy) and drop stage
+-- drop stage mystage_s3;
