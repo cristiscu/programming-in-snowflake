@@ -12,6 +12,7 @@ def get_private_key(asPEM=False):
     # read the private key from file (replace with your own path)
     p_file = os.path.join(os.path.expanduser('~'), ".ssh/id_rsa_demo")
     with open(p_file, "rb") as fkey:
+        
         # decrypt with passphrase (set before as env var)
         passphrase = os.environ['SNOWSQL_PRIVATE_KEY_PASSPHRASE'].encode()
 
@@ -64,7 +65,7 @@ manager = SimpleIngestManager(
     host='XLB86271.snowflakecomputing.com',
     user="cscutaru",
     pipe='EMPLOYEES.PUBLIC.MYPIPE',
-    private_key=p_key_raw) # .decode('utf-8')
+    private_key=p_key_raw.decode('utf-8'))
 
 # after manually loading files in @mystage_pipe!
 ingest_files(manager, ['emp11.csv', 'emp12.csv'])

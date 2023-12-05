@@ -43,8 +43,8 @@ SHOW PARAMETERS LIKE 'event_table' IN ACCOUNT;
 ALTER DATABASE hierarchical_data_viewer SET LOG_LEVEL = INFO;
 ALTER DATABASE hierarchical_data_viewer SET TRACE_LEVEL = ALWAYS;
 
-CREATE TABLE audit_users (start_ts timestamp, user varchar);
-CREATE TABLE audit_queries (start_ts timestamp, query varchar);
+-- CREATE TABLE audit_users (start_ts timestamp, user varchar);
+-- CREATE TABLE audit_queries (start_ts timestamp, query varchar);
 
 -- transfer files, create STREAMLIT app
 PUT &CRT_DIR\modules\*.py @stage/modules overwrite=true auto_compress=false;
