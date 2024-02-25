@@ -17,6 +17,8 @@ All demo code for my Udemy course [**Programming in Snowflake Masterclass 2024 H
 **`~\AppData\Local\Programs\Python\Python39\python -m venv venv`**  
 **`venv/scripts/activate`**  
 
+Beware that you may have multiple installations of Python on your computer. Install and use a Python v3.9 for our projects, as latest versions are not usually installed in Snowflake. My 3.9 version was installed in the `~\AppData\Local\Programs\Python\Python39\` folder, as you see before. But yours could be elsewhere.
+
 * **Install all Python dependencies:**
 
 **`pip install -r requirements.txt`**
