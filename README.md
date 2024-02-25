@@ -47,4 +47,6 @@ username = cristiscu
 * Execute Streamlit apps as local web applications, with commands like **`streamlit run app.py`**. Terminate the sessions with CTRL+C.
 * Execute single Python files with commands like **`python app.py`**.
 
+## Promo Clip
+
 [![Promo Clip](.images/promo-clip.png)](https://youtu.be/H4oT7P6vmKk)
