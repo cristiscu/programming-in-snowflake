@@ -25,4 +25,4 @@ All demo code for my Udemy course [**Programming in Snowflake Masterclass 2024 H
 * **[Install and configure SnowCD](https://developers.snowflake.com/snowcd/)**
 * **Test and debug local projects**
 
-![Promo Clip](https://youtu.be/H4oT7P6vmKk)
+[![Promo Clip](.images/promo-clip.png)](https://youtu.be/H4oT7P6vmKk)
