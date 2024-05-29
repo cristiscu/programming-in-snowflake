@@ -7,7 +7,7 @@ $jwt = ((snowsql --generate-jwt `
   -a XLB86271 `
   -u cscutaru) | Out-String).TrimEnd()
 
-Invoke-Expression ("curl -i -X POST" +
+Invoke-Expression ("curl.exe -i -X POST" +
   " -H 'Content-Type: application/json'" +
   " -H 'Authorization: Bearer $jwt'" +
   " -H 'Accept: application/json'" +
